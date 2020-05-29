@@ -1,0 +1,28 @@
+{
+  "name": "nexusbase-desktop",
+  "version": "1.0.0",
+  "description": "A minimal Electron application written with Typescript",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "start": "yarn build && electron ./build/main.js",
+    "dev": "nodemon"
+  },
+  "repository": "https://github.com/electron/electron-quick-start-typescript",
+  "keywords": [
+    "Electron",
+    "typescript"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^6.0.8",
+    "tslint": "^5.19.0",
+    "typescript": "^3.6.0",
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "lowdb": "^1.0.0"
+  }
+}
