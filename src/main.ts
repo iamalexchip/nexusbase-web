@@ -1,8 +1,10 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
-import { resolveQueries } from './modules/nexusbase_ql/index';
+import NexusbaseQl from './modules/nexusbaseql/nexusbaseql';
+import nexusbaseqlConfig from './config/nexusbaseql';
 
 let mainWindow: Electron.BrowserWindow;
+const nexusbaseQl = new NexusbaseQl(nexusbaseqlConfig);
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -40,12 +42,6 @@ app.on("activate", () => {
   }
 });
 
-ipcMain.on('db', (event:any, arg:any) => {
-  const queries = {
-    workspaces: {
-      action: 'getWorkspaces'
-    }
-  }
-  
-  event.returnValue = resolveQueries(queries);
+ipcMain.on('nbql', (event: any, arg: any[]) => {
+  event.returnValue = nexusbaseQl.resolve(arg);
 })

@@ -17,11 +17,12 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^6.0.8",
+    "nodemon": "^2.0.4",
     "tslint": "^5.19.0",
-    "typescript": "^3.6.0",
-    "nodemon": "^2.0.4"
+    "typescript": "^3.6.0"
   },
   "dependencies": {
+    "@types/lowdb": "^1.0.9",
     "lowdb": "^1.0.0"
   }
 }
