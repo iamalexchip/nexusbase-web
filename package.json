@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "A minimal Electron application written with Typescript",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
+    "compile": "tsc",
     "lint": "tslint -c tslint.json -p tsconfig.json",
-    "start": "yarn build && electron ./build/main.js",
+    "start": "yarn compile && electron ./app/main.js",
     "dev": "nodemon"
   },
   "repository": "https://github.com/electron/electron-quick-start-typescript",
