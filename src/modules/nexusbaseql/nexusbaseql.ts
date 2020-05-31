@@ -8,7 +8,7 @@ interface Iconfig {
   dbFolder: string;
 }
 
-interface Idatabases {
+export interface Idatabases {
   mainDB: any;
   workspaceDB?: any;
 }
@@ -28,18 +28,41 @@ class NexusbaseQl {
 
   resolve(queries: any) {
     const result:any = {};
+    const data:any = {};
+    const errors: any = {};
     const actions = this.getActions();
     const databases = this.getDatabases({ dbFolder: this.dbFolder });
 
     for (const key in queries) {
       const query = queries[key];
       const action = actions[query.action];
-      const nexusbaseQuery = new Query({ databases , action, query });
       
-      result[key] = nexusbaseQuery.resolve();
+      if (!action) {
+        errors[key] = `Unknown action type: ${query.action}`;
+        continue;
+      }
+
+      const nexusbaseQuery = new Query({ databases , action, query });
+      const queryResult = nexusbaseQuery.resolve();
+      
+      if (queryResult.hasOwnProperty('data')) {
+        data[key] = queryResult.data;
+      }
+
+      if (queryResult.hasOwnProperty('errors')) {
+        errors[key] = queryResult.errors;
+      }
     }
 
-    return result
+    if (Object.keys(data).length > 0) {
+      result.data = data;
+    }
+
+    if (Object.keys(errors).length > 0) {
+      result.errors = errors;
+    }
+
+    return result;
   }
 
   getActions() {

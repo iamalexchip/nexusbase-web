@@ -8,15 +8,17 @@ interface IQuery {
 class Query {
   actionName: string;
   resolver: any;
+  args: any;
 
   constructor(config:IQuery) {
     const resolver = config.action.resolver;
     this.resolver = new resolver(config.databases);
     this.actionName = config.query.action;
+    this.args = config.query.args;
   }
 
   resolve() {
-    return this.resolver[this.actionName]();
+    return this.resolver[this.actionName](this.args);
   }
 }
 
