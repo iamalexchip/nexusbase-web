@@ -17,11 +17,13 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^6.0.8",
+    "electron-devtools-installer": "^3.0.0",
     "nodemon": "^2.0.4",
     "tslint": "^5.19.0",
     "typescript": "^3.6.0"
   },
   "dependencies": {
+    "@types/electron-devtools-installer": "^2.2.0",
     "@types/lowdb": "^1.0.9",
     "@types/shortid": "^0.0.29",
     "lowdb": "^1.0.0",

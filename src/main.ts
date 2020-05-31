@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import NexusbaseQl from './modules/nexusbaseql/nexusbaseql';
 import nexusbaseqlConfig from './config/nexusbaseql';
+import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
 let mainWindow: Electron.BrowserWindow;
 const nexusbaseQl = new NexusbaseQl(nexusbaseqlConfig);
@@ -24,7 +25,17 @@ function createWindow() {
   mainWindow.webContents.openDevTools();
 
   mainWindow.on("closed", () => {
-    mainWindow = null;///
+    mainWindow = null;
+  });
+
+  // Install React Dev Tools
+  const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
+
+  installExtension(REACT_DEVELOPER_TOOLS).then((name:string) => {
+    console.log(`Added Extension:  ${name}`);
+  })
+  .catch((err:any) => {
+    console.log('An error occurred: ', err);
   });
 }
 
