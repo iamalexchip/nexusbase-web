@@ -1,9 +1,10 @@
+import { IResolver } from "./types";
 
 interface IQuery {
   action: any;
   query: any;
   databases: any;
-  isWorkspace: boolean
+  useWorkspace: boolean
 }
 
 class Query {
@@ -14,10 +15,13 @@ class Query {
 
   constructor(config:IQuery) {
     const resolver = config.action.resolver;
-    this.resolver = new resolver(config.databases);
+    const resolverConfig: IResolver = {
+      databases: config.databases,
+      useWorkspace: config.useWorkspace
+    };
+    this.resolver = new resolver(resolverConfig);
     this.actionName = config.query.action;
     this.args = config.query.args;
-    this.isWorkspace = config.isWorkspace;
   }
 
   resolve() {

@@ -1,19 +1,25 @@
-import { Idatabases } from "./types";
+import { IResolver } from "./types";
 
 class Resolver {
-  databases: Idatabases;
+  useWorkspace: boolean;
+  mainDB: any;
+  workspaceDB: any;
 
-  constructor(databases: Idatabases) {
-    this.databases = databases;
-  }
+  constructor(config: IResolver) {
+    const { useWorkspace, databases: { mainDB, workspaceDB} } = config;
+    this.useWorkspace = useWorkspace;
 
-  mainDB() {
-    return this.databases.mainDB;
-  }
+    this.mainDB = () => {
+      return mainDB;
+    }
 
-  workspaceDB() {
-    // todo: throw error if workspace id was not given
-    return this.databases.workspaceDB;
+    this.workspaceDB = () => {
+      if (this.useWorkspace === false) {
+        throw new Error('Action requires a workpace data. No worspace give in NexubaseQl request');
+      }
+
+      return workspaceDB;
+    }
   }
 }
 

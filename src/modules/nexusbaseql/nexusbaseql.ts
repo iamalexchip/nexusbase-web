@@ -2,30 +2,21 @@ import Query from './Query';
 import * as low from 'lowdb';
 import * as FileSync from 'lowdb/adapters/FileSync';
 import * as path from "path";
-import { Idatabases } from './types';
-
-interface Iconfig {
-  resolvers: any[];
-  storageFolder: string;
-}
+import * as fs from 'fs';
+import { IResolverDbs, INexusBaseConfig } from './types';
 
 interface Iresolve {
   workspace: string;
   queries: any[];
 }
 
-interface IgetDatabases {
-  storageFolder: string;
-  workspace: string;
-}
-
 class NexusbaseQl {
   resolvers: any[];
-  storageFolder: string;
+  storagePath: string;
 
-  constructor(config:Iconfig) {
+  constructor(config: INexusBaseConfig) {
     this.resolvers = config.resolvers;
-    this.storageFolder = config.storageFolder;
+    this.storagePath = config.path;
   }
 
   resolve({ workspace, queries }: Iresolve) {
@@ -33,10 +24,10 @@ class NexusbaseQl {
     const data: any = {};
     const errors: any = {};
     const actions = this.getActions();
-    const isWorkspace = workspace ? true : false;
+    const useWorkspace = workspace ? true : false;
     const mainDB = this.getMainDB();
-    const workspaceDB = isWorkspace ? this.getWorkspaceDB(mainDB, workspace) : null;
-    const databases: Idatabases = { mainDB, workspaceDB };
+    const workspaceDB = useWorkspace ? this.getWorkspaceDB(mainDB, workspace) : null;
+    const databases: IResolverDbs = { mainDB, workspaceDB };
 
     for (const key in queries) {
       const query = queries[key];
@@ -47,7 +38,7 @@ class NexusbaseQl {
         continue;
       }
 
-      const nexusbaseQuery = new Query({ databases, action, query, isWorkspace });
+      const nexusbaseQuery = new Query({ databases, action, query, useWorkspace });
       const queryResult = nexusbaseQuery.resolve();
       
       if (queryResult.hasOwnProperty('data')) {
@@ -75,6 +66,10 @@ class NexusbaseQl {
 
     for (const resolver of this.resolvers) {
       for (const name in resolver.actions()) {
+        if (actions.hasOwnProperty(name)) {
+          throw new Error(`Duplicate action name: ${name}`);
+        }
+
         actions[name] = {
           resolver
         }
@@ -86,7 +81,7 @@ class NexusbaseQl {
 
   getMainDB() {
     let workspaceDB;
-    const mainDBPath = path.join(this.storageFolder, 'db.json');
+    const mainDBPath = path.join(this.storagePath, 'db.json');
     const mainDB = low(new FileSync(mainDBPath));
     mainDB.defaults({
       workspaces: []
@@ -97,21 +92,24 @@ class NexusbaseQl {
 
   getWorkspaceDB(mainDB: any, workspace: string) {
     const workspaceData = mainDB.get('workspaces').find({ id: workspace }).value();
-    console.log({workspaceData})
-    if (false/*workspace*/) {
-      const workspaceDBPath = path.join(
-        this.storageFolder,
-        'workspaces',
-        workspace,
-        'db.json'
-      );
-      const workspaceDB = low(new FileSync(workspaceDBPath));
-      workspaceDB.defaults({
-        workspace: {}
-      }).write();
     
-      return workspaceDB;
+    if (!workspaceData) {
+      throw new Error(`Workspace not found. Id: ${workspace}`);
     }
+    
+    const workspaceFolder = path.join(this.storagePath, 'workspaces', workspace);
+    
+    if (!fs.existsSync(workspaceFolder)){
+      fs.mkdirSync(workspaceFolder, { recursive: true });
+    }
+
+    const workspaceDBPath = path.join(workspaceFolder, 'db.json');
+    const workspaceDB = low(new FileSync(workspaceDBPath));
+    workspaceDB.defaults({
+      collections: {}
+    }).write();
+  
+    return workspaceDB;
   }
 }
 
