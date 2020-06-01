@@ -1,5 +1,5 @@
 import { IResolver } from "./types";
-import { plugins } from '../../config/app';
+import { hooks } from '../../config/app';
 
 class Resolver {
   useWorkspace: boolean;
@@ -24,7 +24,7 @@ class Resolver {
   }
 
   event(name: string, response: any) {
-    return plugins({
+    return hooks({
       name,
       response,
       mainDB: this.mainDB,
