@@ -1,4 +1,5 @@
 import { IResolver } from "./types";
+import { plugins } from '../../config/app';
 
 class Resolver {
   useWorkspace: boolean;
@@ -15,11 +16,20 @@ class Resolver {
 
     this.workspaceDB = () => {
       if (this.useWorkspace === false) {
-        throw new Error('Action requires a workpace data. No worspace give in NexubaseQl request');
+        throw new Error('Action requires a workpace data. No workspace give in NexubaseQl request');
       }
 
       return workspaceDB;
     }
+  }
+
+  event(name: string, response: any) {
+    return plugins({
+      name,
+      response,
+      mainDB: this.mainDB,
+      workspaceDB: this.useWorkspace ? this.workspaceDB :null
+    });
   }
 }
 

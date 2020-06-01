@@ -35,8 +35,9 @@ class WorkspaceResolver extends Resolver {
   }
 
   getWorkspaces() {
-    const data = this.mainDB().get('workspaces').value();
-    return { data };
+    const response = { data: this.mainDB().get('workspaces').value() };
+    this.event('action.getWorkspaces', response);
+    return response;
   }
 
   getWorkspace(args: any) {

@@ -1,6 +1,5 @@
 export interface INexusBaseConfig {
   resolvers: any[];
-  path: string;
 }
 
 export interface IResolverDbs {

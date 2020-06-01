@@ -4,6 +4,8 @@ import * as FileSync from 'lowdb/adapters/FileSync';
 import * as path from "path";
 import * as fs from 'fs';
 import { IResolverDbs, INexusBaseConfig } from './types';
+import { storagePath } from '../../config/app';
+import config from '../../config/nexusbaseql';
 
 interface Iresolve {
   workspace: string;
@@ -11,14 +13,6 @@ interface Iresolve {
 }
 
 class NexusbaseQl {
-  resolvers: any[];
-  storagePath: string;
-
-  constructor(config: INexusBaseConfig) {
-    this.resolvers = config.resolvers;
-    this.storagePath = config.path;
-  }
-
   resolve({ workspace, queries }: Iresolve) {
     const result: any = {};
     const data: any = {};
@@ -38,7 +32,12 @@ class NexusbaseQl {
         continue;
       }
 
-      const nexusbaseQuery = new Query({ databases, action, query, useWorkspace });
+      const nexusbaseQuery = new Query({
+        databases,
+        action,
+        query,
+        useWorkspace
+      });
       const queryResult = nexusbaseQuery.resolve();
       
       if (queryResult.hasOwnProperty('data')) {
@@ -64,7 +63,7 @@ class NexusbaseQl {
   getActions() {
     const actions: any = [];
 
-    for (const resolver of this.resolvers) {
+    for (const resolver of config.resolvers) {
       for (const name in resolver.actions()) {
         if (actions.hasOwnProperty(name)) {
           throw new Error(`Duplicate action name: ${name}`);
@@ -80,10 +79,10 @@ class NexusbaseQl {
   }
 
   getMainDB() {
-    const mainDBPath = path.join(this.storagePath, 'db.json');
+    const mainDBPath = path.join(storagePath, 'db.json');
 
-    if (!fs.existsSync(this.storagePath)){
-      fs.mkdirSync(this.storagePath, { recursive: true });
+    if (!fs.existsSync(storagePath)){
+      fs.mkdirSync(storagePath, { recursive: true });
     }
 
     const mainDB = low(new FileSync(mainDBPath));
@@ -101,7 +100,7 @@ class NexusbaseQl {
       throw new Error(`Workspace not found. Id: ${workspace}`);
     }
     
-    const workspaceFolder = path.join(this.storagePath, 'workspaces', workspace);
+    const workspaceFolder = path.join(storagePath, 'workspaces', workspace);
     
     if (!fs.existsSync(workspaceFolder)){
       fs.mkdirSync(workspaceFolder, { recursive: true });
