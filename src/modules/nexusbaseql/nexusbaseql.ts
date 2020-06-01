@@ -2,36 +2,41 @@ import Query from './Query';
 import * as low from 'lowdb';
 import * as FileSync from 'lowdb/adapters/FileSync';
 import * as path from "path";
+import { Idatabases } from './types';
 
 interface Iconfig {
   resolvers: any[];
-  dbFolder: string;
+  storageFolder: string;
 }
 
-export interface Idatabases {
-  mainDB: any;
-  workspaceDB?: any;
+interface Iresolve {
+  workspace: string;
+  queries: any[];
 }
 
 interface IgetDatabases {
-  dbFolder: string;
+  storageFolder: string;
+  workspace: string;
 }
 
 class NexusbaseQl {
   resolvers: any[];
-  dbFolder: string;
+  storageFolder: string;
 
   constructor(config:Iconfig) {
     this.resolvers = config.resolvers;
-    this.dbFolder = config.dbFolder;
+    this.storageFolder = config.storageFolder;
   }
 
-  resolve(queries: any) {
-    const result:any = {};
-    const data:any = {};
+  resolve({ workspace, queries }: Iresolve) {
+    const result: any = {};
+    const data: any = {};
     const errors: any = {};
     const actions = this.getActions();
-    const databases = this.getDatabases({ dbFolder: this.dbFolder });
+    const isWorkspace = workspace ? true : false;
+    const mainDB = this.getMainDB();
+    const workspaceDB = isWorkspace ? this.getWorkspaceDB(mainDB, workspace) : null;
+    const databases: Idatabases = { mainDB, workspaceDB };
 
     for (const key in queries) {
       const query = queries[key];
@@ -42,7 +47,7 @@ class NexusbaseQl {
         continue;
       }
 
-      const nexusbaseQuery = new Query({ databases , action, query });
+      const nexusbaseQuery = new Query({ databases, action, query, isWorkspace });
       const queryResult = nexusbaseQuery.resolve();
       
       if (queryResult.hasOwnProperty('data')) {
@@ -66,7 +71,7 @@ class NexusbaseQl {
   }
 
   getActions() {
-    const actions:any = [];
+    const actions: any = [];
 
     for (const resolver of this.resolvers) {
       for (const name in resolver.actions()) {
@@ -79,15 +84,34 @@ class NexusbaseQl {
     return actions;
   }
 
-  getDatabases({ dbFolder }:IgetDatabases):Idatabases {
-    const mainDBPath = path.join(dbFolder, 'app.json');
+  getMainDB() {
+    let workspaceDB;
+    const mainDBPath = path.join(this.storageFolder, 'db.json');
     const mainDB = low(new FileSync(mainDBPath));
-    mainDB.defaults({ workspaces: [] })
-      .write()
+    mainDB.defaults({
+      workspaces: []
+    }).write();
 
-    return {
-      mainDB
-    };
+    return mainDB;
+  }
+
+  getWorkspaceDB(mainDB: any, workspace: string) {
+    const workspaceData = mainDB.get('workspaces').find({ id: workspace }).value();
+    console.log({workspaceData})
+    if (false/*workspace*/) {
+      const workspaceDBPath = path.join(
+        this.storageFolder,
+        'workspaces',
+        workspace,
+        'db.json'
+      );
+      const workspaceDB = low(new FileSync(workspaceDBPath));
+      workspaceDB.defaults({
+        workspace: {}
+      }).write();
+    
+      return workspaceDB;
+    }
   }
 }
 

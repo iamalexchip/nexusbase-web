@@ -53,6 +53,6 @@ app.on("activate", () => {
   }
 });
 
-ipcMain.on('nbql', (event: any, arg: any[]) => {
-  event.returnValue = nexusbaseQl.resolve(arg);
+ipcMain.on('nbql', (event: any, arg: any) => {
+  event.returnValue = nexusbaseQl.resolve({ workspace: arg[0], queries: arg[1]});
 })

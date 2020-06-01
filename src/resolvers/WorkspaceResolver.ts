@@ -1,13 +1,7 @@
 import * as shortid from 'shortid';
-import { Idatabases } from '../modules/nexusbaseql/nexusbaseql';
+import Resolver from '../modules/nexusbaseql/Resolver';
 
-class WorkspaceResolver {
-  mainDB: any;
-
-  constructor(databases: Idatabases) {
-    this.mainDB = databases.mainDB;
-  }
-
+class WorkspaceResolver extends Resolver {
   static actions():any {
     return {
       createWorkspace: {},
@@ -19,14 +13,15 @@ class WorkspaceResolver {
   createWorkspace(args: any) {
     let workspaceId: string;
     let isUnique = false;
+    const mainDB = this.mainDB();
     
     while(!isUnique) {
       workspaceId = shortid.generate();
-      const match = this.mainDB.get('workspaces').find({ id: workspaceId }).value();
+      const match = mainDB.get('workspaces').find({ id: workspaceId }).value();
       isUnique = match ? false : true;
     }
 
-    this.mainDB
+    mainDB
       .get('workspaces')
       .push({
         id: workspaceId,
@@ -34,15 +29,19 @@ class WorkspaceResolver {
       })
       .write();
 
-    return { data: this.mainDB.get('workspaces').find({ id: workspaceId }).value() };
+    const data = mainDB.get('workspaces').find({ id: workspaceId }).value();
+
+    return { data };
   }
 
-  getWorkspaces() { 
-    return { data: this.mainDB.get('workspaces').value() };
+  getWorkspaces() {
+    const data = this.mainDB().get('workspaces').value();
+    return { data };
   }
 
-  getWorkspace(args: any) { 
-    return { data: this.mainDB.get('workspaces').find({ id: args.id }).value() };
+  getWorkspace(args: any) {
+    const data = this.mainDB().get('workspaces').find({ id: args.id }).value(); 
+    return { data };
   }
 }
 
