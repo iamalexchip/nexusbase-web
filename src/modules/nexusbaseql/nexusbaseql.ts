@@ -80,8 +80,12 @@ class NexusbaseQl {
   }
 
   getMainDB() {
-    let workspaceDB;
     const mainDBPath = path.join(this.storagePath, 'db.json');
+
+    if (!fs.existsSync(this.storagePath)){
+      fs.mkdirSync(this.storagePath, { recursive: true });
+    }
+
     const mainDB = low(new FileSync(mainDBPath));
     mainDB.defaults({
       workspaces: []
