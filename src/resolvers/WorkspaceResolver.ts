@@ -11,6 +11,12 @@ class WorkspaceResolver extends Resolver {
   }
 
   createWorkspace(args: any) {
+    let error = this.hook('action.workspaces.add.before', args);
+    
+    if (error) {
+      return { error };
+    }
+
     let workspaceId: string;
     let isUnique = false;
     const mainDB = this.mainDB();
@@ -30,23 +36,38 @@ class WorkspaceResolver extends Resolver {
       .write();
 
     const data = mainDB.get('workspaces').find({ id: workspaceId }).value();
-    const response = { data };
-    this.hook('action.workspaces.add', response);
-    return response
+    const result = { data };
+    error = this.hook('action.workspaces.add.after', result);
+
+    return error ? { error } : result;
   }
 
-  getWorkspaces() {
+  getWorkspaces(args: any) {
+    let error = this.hook('action.workspaces.browse.before', args);
+    
+    if (error) {
+      return { error };
+    }
+
     const data = this.mainDB().get('workspaces').value();
-    const response = { data };
-    this.hook('action.workspaces.browse', response);
-    return response;
+    const result = { data };
+    error = this.hook('action.workspaces.browse.after', result);
+
+    return error ? { error } : result;
   }
   
   getWorkspace(args: any) {
+    let error = this.hook('action.workspaces.read.before', args);
+    
+    if (error) {
+      return { error };
+    }
+
     const data = this.mainDB().get('workspaces').find({ id: args.id }).value();
-    const response = { data };
-    this.hook('action.workspaces.read', response);
-    return response;
+    const result = { data };
+    error = this.hook('action.workspaces.read.after', result);
+
+    return error ? { error } : result;
   }
 }
 

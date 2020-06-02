@@ -43,7 +43,7 @@ class NexusbaseQl {
         action,
         query,
         useWorkspace,
-        hooks: this.config.hooks
+        hookResolver: this.config.hookResolver
       });
       const queryResult = nexusbaseQuery.resolve();
       
@@ -51,8 +51,8 @@ class NexusbaseQl {
         data[key] = queryResult.data;
       }
 
-      if (queryResult.hasOwnProperty('errors')) {
-        errors[key] = queryResult.errors;
+      if (queryResult.hasOwnProperty('error')) {
+        errors[key] = queryResult.error;
       }
     }
 

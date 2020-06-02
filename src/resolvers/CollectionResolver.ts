@@ -8,11 +8,18 @@ class CollectionResolver extends Resolver {
     }
   }
 
-  getCollections() {
+  getCollections(args: any) {
+    let error = this.hook('action.collections.browse.before', args);
+    
+    if (error) {
+      return { error };
+    }
+
     const data = this.workspaceDB().get('collections').value();
-    const response = { data };
-    this.hook('action.collections.browse', response);
-    return response;
+    const result = { data };
+    error = this.hook('action.collections.browse.after', result);
+
+    return error ? { error } : result;
   }
 }
 

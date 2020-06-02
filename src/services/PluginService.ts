@@ -1,35 +1,57 @@
 import * as path from "path";
 import { readdirSync } from 'fs';
-import { storagePath } from '../config/app';
+import { storagePath, appPath } from '../config/app';
+
+interface IpluginData {
+  
+}
 
 class PluginService {
+  pluginData: IpluginData;
+
+  constructor() {
+    this.pluginData = { app: { version: '1.0'} };
+  }
+
   getDirectories(source:string) {
     return readdirSync(source, { withFileTypes: true })
       .filter(dirent => dirent.isDirectory())
-      .map(dirent => dirent.name);
+      .map(dirent => `${source}/${dirent.name}`);
   }
 
-  getPlugins() {
-    const plugins = [];
-    const pluginsPath = path.join(storagePath, 'plugins');
-    const pluginFolders = this.getDirectories(pluginsPath);
-    
-    for (const pluginFolder of pluginFolders) {
-      const pluginModule = path.join(pluginsPath, pluginFolder);
-      const PluginClass = require(pluginModule);
-      const plugin = new PluginClass({ version: '1.0'});
-      
-      plugins.push(plugin);
+  isClass(f: any) {
+    try {
+      new f();
+    } catch (err) {
+      return false;
     }
-
-    return plugins;
+    return true;
   }
 
-  hooks(data: any) {
+  getPlugins() {    
+    const appPluginPaths = this.getDirectories(path.join(appPath, 'plugins')); 
+    const installedPluginPaths = this.getDirectories(path.join(storagePath, 'plugins'));
+    const pluginPaths = [ ...appPluginPaths, ...installedPluginPaths ];  
+    const pluginModules = pluginPaths.map((pluginPath: string) => require(pluginPath));
+    const PluginClasses = pluginModules.map((PluginModule: any) => {
+      const hasDefault = PluginModule.hasOwnProperty('default');
+      const PluginClass = hasDefault ?  PluginModule.default : PluginModule;
+        
+      return this.isClass(PluginClass) ? new PluginClass(this.pluginData) : null;
+    });
+
+    return PluginClasses.filter((PluginClass: any) => PluginClass);
+  }
+
+  hook(data: any) {
     const plugins = this.getPlugins();
     
     for (const plugin of plugins) {
-      plugin.hooks(data);
+      const error = plugin.hook(data);
+
+      if (error) {
+        return error;
+      }
     }
   }
 }

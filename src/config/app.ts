@@ -1,3 +1,8 @@
 import * as path from "path";
 
-export const storagePath = path.join(__dirname, '..', '..', 'storage');// todo: change path based on env
+/* Todo: use env to define path, default should be
+ * production: ~/.nexusbase
+ * dev: path.join(__dirname, '..', '..', 'storage')
+ */
+export const storagePath = path.join(__dirname, '..', '..', 'storage');
+export const appPath = path.join(__dirname, '..');

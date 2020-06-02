@@ -4,12 +4,12 @@ class Resolver {
   useWorkspace: boolean;
   mainDB: any;
   workspaceDB: any;
-  event: any;
+  hookResolver: any;
 
   constructor(config: IResolver) {
-    const { useWorkspace, hooks, databases: { mainDB, workspaceDB} } = config;
+    const { useWorkspace, hookResolver, databases: { mainDB, workspaceDB} } = config;
     this.useWorkspace = useWorkspace;
-    this.event = hooks;
+    this.hookResolver = hookResolver;
 
     this.mainDB = () => {
       return mainDB;
@@ -24,10 +24,10 @@ class Resolver {
     }
   }
 
-  hook(name: string, response: any) {
-    return this.event.hooks({
+  hook(name: string, payload: any) {
+    return this.hookResolver.resolve({
       name,
-      response,
+      payload,
       mainDB: this.mainDB,
       workspaceDB: this.useWorkspace ? this.workspaceDB :null
     });
