@@ -1,14 +1,15 @@
 import { IResolver } from "./types";
-import { hooks } from '../../config/app';
 
 class Resolver {
   useWorkspace: boolean;
   mainDB: any;
   workspaceDB: any;
+  event: any;
 
   constructor(config: IResolver) {
-    const { useWorkspace, databases: { mainDB, workspaceDB} } = config;
+    const { useWorkspace, hooks, databases: { mainDB, workspaceDB} } = config;
     this.useWorkspace = useWorkspace;
+    this.event = hooks;
 
     this.mainDB = () => {
       return mainDB;
@@ -23,8 +24,8 @@ class Resolver {
     }
   }
 
-  event(name: string, response: any) {
-    return hooks({
+  hook(name: string, response: any) {
+    return this.event.hooks({
       name,
       response,
       mainDB: this.mainDB,

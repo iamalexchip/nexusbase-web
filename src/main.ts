@@ -5,7 +5,7 @@ import nexusbaseqlConfig from './config/nexusbaseql';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
 let mainWindow: Electron.BrowserWindow;
-const nexusbaseQl = new NexusbaseQl;
+const nexusbaseQl = new NexusbaseQl(nexusbaseqlConfig);
 
 function createWindow() {
   mainWindow = new BrowserWindow({

@@ -31,21 +31,21 @@ class WorkspaceResolver extends Resolver {
 
     const data = mainDB.get('workspaces').find({ id: workspaceId }).value();
     const response = { data };
-    this.event('action.workspaces.add', response);
+    this.hook('action.workspaces.add', response);
     return response
   }
 
   getWorkspaces() {
     const data = this.mainDB().get('workspaces').value();
     const response = { data };
-    this.event('action.workspaces.browse', response);
+    this.hook('action.workspaces.browse', response);
     return response;
   }
   
   getWorkspace(args: any) {
     const data = this.mainDB().get('workspaces').find({ id: args.id }).value();
     const response = { data };
-    this.event('action.workspaces.read', response);
+    this.hook('action.workspaces.read', response);
     return response;
   }
 }

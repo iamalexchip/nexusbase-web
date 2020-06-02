@@ -11,7 +11,7 @@ class CollectionResolver extends Resolver {
   getCollections() {
     const data = this.workspaceDB().get('collections').value();
     const response = { data };
-    this.event('action.collections.browse', response);
+    this.hook('action.collections.browse', response);
     return response;
   }
 }

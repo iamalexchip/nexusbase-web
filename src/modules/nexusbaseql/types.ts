@@ -1,4 +1,6 @@
 export interface INexusBaseConfig {
+  hooks: object;
+  path: string;
   resolvers: any[];
 }
 
@@ -9,5 +11,6 @@ export interface IResolverDbs {
 
 export interface IResolver {
   databases: IResolverDbs;
-  useWorkspace: boolean
+  useWorkspace: boolean;
+  hooks: any;
 }

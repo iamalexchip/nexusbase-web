@@ -4,20 +4,21 @@ interface IQuery {
   action: any;
   query: any;
   databases: any;
-  useWorkspace: boolean
+  useWorkspace: boolean;
+  hooks: any;
 }
 
 class Query {
   actionName: string;
   resolver: any;
   args: any;
-  isWorkspace: boolean
 
   constructor(config:IQuery) {
     const resolver = config.action.resolver;
     const resolverConfig: IResolver = {
       databases: config.databases,
-      useWorkspace: config.useWorkspace
+      useWorkspace: config.useWorkspace,
+      hooks: config.hooks
     };
     this.resolver = new resolver(resolverConfig);
     this.actionName = config.query.action;
