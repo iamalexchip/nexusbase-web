@@ -9,7 +9,7 @@ class CollectionResolver extends Resolver {
   }
 
   getCollections(args: any) {
-    let error = this.hook('action.collections.browse.before', args);
+    let error = this.event('action.collections.browse.before', args);
     
     if (error) {
       return { error };
@@ -17,7 +17,7 @@ class CollectionResolver extends Resolver {
 
     const data = this.workspaceDB().get('collections').value();
     const result = { data };
-    error = this.hook('action.collections.browse.after', result);
+    error = this.event('action.collections.browse.after', result);
 
     return error ? { error } : result;
   }

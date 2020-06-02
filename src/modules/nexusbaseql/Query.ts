@@ -5,7 +5,7 @@ interface IQuery {
   query: any;
   databases: any;
   useWorkspace: boolean;
-  hookResolver: any;
+  event: any;
 }
 
 class Query {
@@ -18,7 +18,7 @@ class Query {
     const resolverConfig: IResolver = {
       databases: config.databases,
       useWorkspace: config.useWorkspace,
-      hookResolver: config.hookResolver
+      event: config.event
     };
     this.resolver = new resolver(resolverConfig);
     this.actionName = config.query.action;

@@ -1,6 +1,6 @@
-import * as fs from 'fs';
 import * as path from "path";
-import { readdirSync } from 'fs';
+import { existsSync, readdirSync } from 'fs';
+import { dialog } from 'electron';
 import { storagePath } from '../config/app';
 
 interface IpluginData {
@@ -31,7 +31,7 @@ class PluginService {
 
   getPlugins() {    
     let pluginPaths = this.getDirectories(path.join(storagePath, 'plugins'));
-    pluginPaths = pluginPaths.filter((pluginPath: string) => fs.existsSync(`${pluginPath}/dist`));
+    pluginPaths = pluginPaths.filter((pluginPath: string) => existsSync(`${pluginPath}/dist`));
     const pluginModules = pluginPaths.map((pluginPath: string) => require(`${pluginPath}/dist`));
     const PluginClasses = pluginModules.map((PluginModule: any) => {
       const hasDefault = PluginModule.hasOwnProperty('default');
@@ -43,11 +43,13 @@ class PluginService {
     return PluginClasses.filter((PluginClass: any) => PluginClass);
   }
 
-  hook(data: any) {
+  event(data: any) {
     const plugins = this.getPlugins();
     
     for (const plugin of plugins) {
-      const error = plugin.hook(data);
+      if(typeof plugin.event !== 'function') continue;
+      
+      const error = plugin.event(data);
 
       if (error) {
         return error;

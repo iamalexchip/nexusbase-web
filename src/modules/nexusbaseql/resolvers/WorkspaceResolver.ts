@@ -11,7 +11,7 @@ class WorkspaceResolver extends Resolver {
   }
 
   createWorkspace(args: any) {
-    let error = this.hook('action.workspaces.add.before', args);
+    let error = this.event('action.workspaces.add.before', args);
     
     if (error) {
       return { error };
@@ -37,13 +37,13 @@ class WorkspaceResolver extends Resolver {
 
     const data = mainDB.get('workspaces').find({ id: workspaceId }).value();
     const result = { data };
-    error = this.hook('action.workspaces.add.after', result);
+    error = this.event('action.workspaces.add.after', result);
 
     return error ? { error } : result;
   }
 
   getWorkspaces(args: any) {
-    let error = this.hook('action.workspaces.browse.before', args);
+    let error = this.event('action.workspaces.browse.before', args);
     
     if (error) {
       return { error };
@@ -51,13 +51,13 @@ class WorkspaceResolver extends Resolver {
 
     const data = this.mainDB().get('workspaces').value();
     const result = { data };
-    error = this.hook('action.workspaces.browse.after', result);
+    error = this.event('action.workspaces.browse.after', result);
 
     return error ? { error } : result;
   }
   
   getWorkspace(args: any) {
-    let error = this.hook('action.workspaces.read.before', args);
+    let error = this.event('action.workspaces.read.before', args);
     
     if (error) {
       return { error };
@@ -65,7 +65,7 @@ class WorkspaceResolver extends Resolver {
 
     const data = this.mainDB().get('workspaces').find({ id: args.id }).value();
     const result = { data };
-    error = this.hook('action.workspaces.read.after', result);
+    error = this.event('action.workspaces.read.after', result);
 
     return error ? { error } : result;
   }

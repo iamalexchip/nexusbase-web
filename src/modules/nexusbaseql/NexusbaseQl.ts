@@ -42,7 +42,7 @@ class NexusbaseQl {
         action,
         query,
         useWorkspace,
-        hookResolver: this.config.hookResolver
+        event: this.config.event
       });
       const queryResult = nexusbaseQuery.resolve();
       
@@ -67,7 +67,7 @@ class NexusbaseQl {
   }
 
   getActions() {
-    const actions: any = [];
+    const actions: any = {};
     const customResolvers = this.config.resolvers || []; 
     const resolvers = [ ...defaultResolvers, ...customResolvers ];
 
