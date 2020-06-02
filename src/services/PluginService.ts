@@ -1,6 +1,7 @@
+import * as fs from 'fs';
 import * as path from "path";
 import { readdirSync } from 'fs';
-import { storagePath, appPath } from '../config/app';
+import { storagePath } from '../config/app';
 
 interface IpluginData {
   
@@ -29,14 +30,13 @@ class PluginService {
   }
 
   getPlugins() {    
-    const appPluginPaths = this.getDirectories(path.join(appPath, 'plugins')); 
-    const installedPluginPaths = this.getDirectories(path.join(storagePath, 'plugins'));
-    const pluginPaths = [ ...appPluginPaths, ...installedPluginPaths ];  
-    const pluginModules = pluginPaths.map((pluginPath: string) => require(pluginPath));
+    let pluginPaths = this.getDirectories(path.join(storagePath, 'plugins'));
+    pluginPaths = pluginPaths.filter((pluginPath: string) => fs.existsSync(`${pluginPath}/dist`));
+    const pluginModules = pluginPaths.map((pluginPath: string) => require(`${pluginPath}/dist`));
     const PluginClasses = pluginModules.map((PluginModule: any) => {
       const hasDefault = PluginModule.hasOwnProperty('default');
       const PluginClass = hasDefault ?  PluginModule.default : PluginModule;
-        
+      
       return this.isClass(PluginClass) ? new PluginClass(this.pluginData) : null;
     });
 

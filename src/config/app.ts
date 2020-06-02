@@ -6,3 +6,7 @@ import * as path from "path";
  */
 export const storagePath = path.join(__dirname, '..', '..', 'storage');
 export const appPath = path.join(__dirname, '..');
+export const platforms = {
+  server: '1.0',
+  web: '1.0'
+};
