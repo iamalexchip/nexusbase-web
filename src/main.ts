@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
-import NexusbaseQl from './modules/nexusbaseql/nexusbaseql';
+import NexusbaseQl from './modules/nexusbaseql';
 import nexusbaseqlConfig from './config/nexusbaseql';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 

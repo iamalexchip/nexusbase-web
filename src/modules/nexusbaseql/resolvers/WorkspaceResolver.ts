@@ -1,5 +1,5 @@
 import * as shortid from 'shortid';
-import Resolver from '../modules/nexusbaseql/Resolver';
+import Resolver from './Resolver';
 
 class WorkspaceResolver extends Resolver {
   static actions():any {

@@ -1,4 +1,4 @@
-import { IResolver } from "./types";
+import { IResolver } from "../types";
 
 class Resolver {
   useWorkspace: boolean;

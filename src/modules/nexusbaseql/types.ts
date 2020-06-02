@@ -1,7 +1,7 @@
-export interface INexusBaseConfig {
+export interface IConfig {
   path: string;
-  hookResolver: object;
-  resolvers: any[];
+  hookResolver?: object;
+  resolvers?: any[];
 }
 
 export interface IResolverDbs {

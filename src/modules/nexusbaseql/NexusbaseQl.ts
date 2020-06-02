@@ -3,23 +3,22 @@ import * as low from 'lowdb';
 import * as FileSync from 'lowdb/adapters/FileSync';
 import * as path from "path";
 import * as fs from 'fs';
-import { IResolverDbs, INexusBaseConfig } from './types';
-
-interface Iresolve {
-  workspace: string;
-  queries: any[];
-}
+import { IResolverDbs, IConfig } from './types';
+import defaultResolvers from './resolvers';
 
 class NexusbaseQl {
-  config: INexusBaseConfig;
+  config: IConfig;
   storagePath: string;
 
-  constructor(config: INexusBaseConfig) {
+  constructor(config: IConfig) {
     this.config = config;
     this.storagePath = path.join(config.path, 'data');
   }
 
-  resolve({ workspace, queries }: Iresolve) {
+  resolve({ workspace, queries }: {
+    workspace: string;
+    queries: any[];
+  }) {
     const result: any = {};
     const data: any = {};
     const errors: any = {};
@@ -69,8 +68,10 @@ class NexusbaseQl {
 
   getActions() {
     const actions: any = [];
+    const customResolvers = this.config.resolvers || []; 
+    const resolvers = [ ...defaultResolvers, ...customResolvers ];
 
-    for (const resolver of this.config.resolvers) {
+    for (const resolver of resolvers) {
       for (const name in resolver.actions()) {
         if (actions.hasOwnProperty(name)) {
           throw new Error(`Duplicate action name: ${name}`);
