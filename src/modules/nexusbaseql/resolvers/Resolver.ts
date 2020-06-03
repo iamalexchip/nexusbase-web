@@ -1,38 +1,44 @@
 import { IResolver } from "../types";
 
 class Resolver {
-  useWorkspace: boolean;
   mainDB: any;
   workspaceDB: any;
-  eventHandler: any;
+  event: any;
+  plugin: any;
 
   constructor(config: IResolver) {
-    const { useWorkspace, event, databases: { mainDB, workspaceDB} } = config;
-    this.useWorkspace = useWorkspace;
-    this.eventHandler = event;
+    const {
+      useWorkspace,
+      hook,
+      databases: {
+        mainDB,
+        workspaceDB
+      }
+    } = config;
 
-    this.mainDB = () => {
-      return mainDB;
-    }
+    this.mainDB = () => mainDB;
 
     this.workspaceDB = () => {
-      if (this.useWorkspace === false) {
+      if (useWorkspace === false) {
         throw new Error('Action requires a workpace data. No workspace give in NexubaseQl request');
       }
-
+      
       return workspaceDB;
-    }
-  }
+    };
+    
+    this.event = (type: string, payload: any) => {
+      return hook.event({
+        type,
+        emitter: `resolver`,
+        payload,
+        meta: {
+          mainDB: this.mainDB(),
+          workspaceDB: useWorkspace ? this.workspaceDB() : null
+        },
+      });
+    };
 
-  event(type: string, payload: any) {
-    return this.eventHandler.event({
-      type,
-      payload,
-      meta: {
-        mainDB: this.mainDB,
-        workspaceDB: this.useWorkspace ? this.workspaceDB :null
-      },
-    });
+    this.plugin = (type: string, data: any) => hook.action(type, data);
   }
 }
 

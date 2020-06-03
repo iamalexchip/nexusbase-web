@@ -5,7 +5,7 @@ interface IQuery {
   query: any;
   databases: any;
   useWorkspace: boolean;
-  event: any;
+  hook: any;
 }
 
 class Query {
@@ -13,12 +13,12 @@ class Query {
   resolver: any;
   args: any;
 
-  constructor(config:IQuery) {
+  constructor(config: IQuery) {
     const resolver = config.action.resolver;
     const resolverConfig: IResolver = {
       databases: config.databases,
       useWorkspace: config.useWorkspace,
-      event: config.event
+      hook: config.hook,
     };
     this.resolver = new resolver(resolverConfig);
     this.actionName = config.query.action;

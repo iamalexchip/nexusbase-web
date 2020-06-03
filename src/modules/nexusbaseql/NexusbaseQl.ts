@@ -42,7 +42,7 @@ class NexusbaseQl {
         action,
         query,
         useWorkspace,
-        event: this.config.event
+        hook: this.config.hook
       });
       const queryResult = nexusbaseQuery.resolve();
       

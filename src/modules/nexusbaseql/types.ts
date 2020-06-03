@@ -1,6 +1,6 @@
 export interface IConfig {
   path: string;
-  event?: object;
+  hook?: object;
   resolvers?: any[];
 }
 
@@ -12,5 +12,5 @@ export interface IResolverDbs {
 export interface IResolver {
   databases: IResolverDbs;
   useWorkspace: boolean;
-  event: any;
+  hook: any;
 }
