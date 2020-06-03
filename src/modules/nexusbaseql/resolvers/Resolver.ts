@@ -5,6 +5,7 @@ class Resolver {
   workspaceDB: any;
   event: any;
   plugin: any;
+  alias: string;
 
   constructor(config: IResolver) {
     const {
@@ -25,20 +26,24 @@ class Resolver {
       
       return workspaceDB;
     };
+
+    const databases = {
+      mainDB: this.mainDB(),
+      workspaceDB: useWorkspace ? this.workspaceDB() : null
+    };
     
     this.event = (type: string, payload: any) => {
       return hook.event({
         type,
-        emitter: `resolver`,
+        emitter: `resolvers.${this.alias}`,
         payload,
-        meta: {
-          mainDB: this.mainDB(),
-          workspaceDB: useWorkspace ? this.workspaceDB() : null
-        },
+        databases
       });
     };
 
-    this.plugin = (type: string, data: any) => hook.action(type, data);
+    this.plugin = (name: string, payload: any) => {
+      return hook.action(name, databases, payload);
+    };
   }
 }
 

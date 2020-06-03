@@ -117,7 +117,7 @@ class NexusbaseQl {
     const workspaceDBPath = path.join(workspaceFolder, 'db.json');
     const workspaceDB = low(new FileSync(workspaceDBPath));
     workspaceDB.defaults({
-      collections: {}
+      collections: []
     }).write();
   
     return workspaceDB;
