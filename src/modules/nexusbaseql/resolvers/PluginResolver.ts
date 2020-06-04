@@ -1,4 +1,3 @@
-import * as shortid from 'shortid';
 import { IResolver } from "../types";
 import Resolver from './Resolver';
 

@@ -49,7 +49,7 @@ class PluginService {
     return this.isClass(PluginClass) ? new PluginClass(this.data) : null;
   }
 
-  action(pluginName: string, databases: any, payload: any) {
+  action(pluginName: string, databases: any, resolver: any, payload: any) {
     const plugin = this.getPlugin(pluginName);
     if (!plugin) return { error: `Plugin invalid or not installed: ${pluginName}` };
     if (typeof plugin.action !== 'function') return { error: `Plugin action not found: ${pluginName}` };
@@ -61,7 +61,7 @@ class PluginService {
       databases
     });
     
-    return plugin.action({ databases, event, payload });
+    return plugin.action({ databases, event, resolver, payload });
   }
 
   event(data: {

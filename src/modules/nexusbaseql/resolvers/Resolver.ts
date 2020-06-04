@@ -1,8 +1,10 @@
+import * as shortid from 'shortid';
 import { IResolver } from "../types";
 
 class Resolver {
   mainDB: any;
   workspaceDB: any;
+  config: any;
   event: any;
   plugin: any;
   alias: string;
@@ -17,6 +19,7 @@ class Resolver {
       }
     } = config;
 
+    this.config = () => config;
     this.mainDB = () => mainDB;
 
     this.workspaceDB = () => {
@@ -42,8 +45,21 @@ class Resolver {
     };
 
     this.plugin = (name: string, payload: any) => {
-      return hook.action(name, databases, payload);
+      return hook.action(name, databases, this.config(), payload);
     };
+  }
+
+  uniqueId(array: any) {
+    let isUnique = false;
+    let id: string;
+
+    while(!isUnique) {
+      id = shortid.generate();
+      const match = array.find({ id }).value();
+      isUnique = match ? false : true;
+    }
+
+    return id;
   }
 }
 

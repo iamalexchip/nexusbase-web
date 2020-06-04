@@ -1,4 +1,3 @@
-import * as shortid from 'shortid';
 import { IResolver } from "../types";
 import Resolver from './Resolver';
 
@@ -20,15 +19,8 @@ class WorkspaceResolver extends Resolver {
     let error = this.event('add.before', args);
     if (error) return { error };
 
-    let workspaceId: string;
-    let isUnique = false;
     const mainDB = this.mainDB();
-    
-    while(!isUnique) {
-      workspaceId = shortid.generate();
-      const match = mainDB.get('workspaces').find({ id: workspaceId }).value();
-      isUnique = match ? false : true;
-    }
+    const workspaceId: string = this.uniqueId(mainDB.get('workspaces'));
 
     mainDB
       .get('workspaces')
