@@ -26,7 +26,6 @@ class CollectionResolver extends Resolver {
     const viewResolver = new ViewResolver(this.config());
     const view = viewResolver.createView({
       collection: collectionId,
-      type: 'table',
       fields: ['f1']
     }).data;
     

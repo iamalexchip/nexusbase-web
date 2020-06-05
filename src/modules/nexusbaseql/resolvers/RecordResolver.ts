@@ -1,7 +1,7 @@
 import { IResolver, IResolverResult } from "../types";
 import Resolver from './Resolver';
 
-class ViewResolver extends Resolver {
+class RecordResolver extends Resolver {
   constructor(config: IResolver) {
     super(config);
     this.alias = 'view';
@@ -9,11 +9,12 @@ class ViewResolver extends Resolver {
 
   static actions():any {
     return {
-      createView: {}
+      createRecord: {},
+      getRecords: {}
     }
   }
 
-  createView(args: any): IResolverResult {
+  createRecord(args: any): IResolverResult {
     let error = this.event('add.before', args);
     if (error) return { error };
 
@@ -23,7 +24,6 @@ class ViewResolver extends Resolver {
     const viewData = {
       id: viewId,
       name: args.name || '',
-      type: args.type || 'list',
       collection: args.collection,
       fields: args.fields,
       createdAt: timestamp,
@@ -38,6 +38,17 @@ class ViewResolver extends Resolver {
     error = this.event('add.after', result);
     return error ? { error } : result;
   }
+
+  getRecords(args: any): IResolverResult {
+    let error = this.event('browse.before', args);
+    if (error) return { error };
+
+    const records = this.workspaceDB().get('records').value();
+    const result: IResolverResult = { data: records };
+
+    error = this.event('browse.after', result);
+    return error ? { error } : result;
+  }
 }
 
-export default ViewResolver;
+export default RecordResolver;

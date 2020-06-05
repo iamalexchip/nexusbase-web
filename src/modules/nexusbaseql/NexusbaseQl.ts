@@ -118,7 +118,8 @@ class NexusbaseQl {
     const workspaceDB = low(new FileSync(workspaceDBPath));
     workspaceDB.defaults({
       collections: [],
-      views: []
+      views: [],
+      records: []
     }).write();
   
     return workspaceDB;
