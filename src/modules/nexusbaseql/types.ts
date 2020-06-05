@@ -14,3 +14,8 @@ export interface IResolver {
   useWorkspace: boolean;
   hook: any;
 }
+
+export interface IResolverResult {
+  data?: any;
+  error?: any;
+}

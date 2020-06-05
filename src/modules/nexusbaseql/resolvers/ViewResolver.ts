@@ -1,4 +1,4 @@
-import { IResolver } from "../types";
+import { IResolver, IResolverResult } from "../types";
 import Resolver from './Resolver';
 
 class ViewResolver extends Resolver {
@@ -13,24 +13,26 @@ class ViewResolver extends Resolver {
     }
   }
 
-  createView(args: any) {
+  createView(args: any): IResolverResult {
     let error = this.event('add.before', args);
     if (error) return { error };
 
     const workspaceDB = this.workspaceDB();
     let viewId: string = this.uniqueId(workspaceDB.get('wiews'));
+    const timestamp = this.timestamp();
+    const viewData = {
+      id: viewId,
+      name: args.name || '',
+      collection: args.collection,
+      fields: args.fields,
+      createdAt: timestamp,
+      updatedAt: timestamp
+    };
 
-    workspaceDB
-      .get('views')
-      .push({
-        id: viewId,
-        name: args.name,
-        collection: args.collection
-      })
-      .write();
+    workspaceDB.get('views').push(viewData).write();
 
-    const data = workspaceDB.get('views').find({ id: viewId }).value();
-    const result = { data };
+    const view = workspaceDB.get('views').find({ id: viewId }).value();
+    let result: IResolverResult = { data: view };
 
     error = this.event('add.after', result);
     return error ? { error } : result;

@@ -1,4 +1,4 @@
-import { IResolver } from "../types";
+import { IResolver, IResolverResult } from "../types";
 import Resolver from './Resolver';
 
 class PluginResolver extends Resolver {
@@ -13,11 +13,11 @@ class PluginResolver extends Resolver {
     }
   }
 
-  pluginAction(args: any) {
+  pluginAction(args: any): IResolverResult {
     let error = this.event('plugins.before', args);
     if (error) return { error };
 
-    const result = this.plugin(args.plugin, args.payload);
+    const result: IResolverResult = this.plugin(args.plugin, args.payload);
 
     error = this.event('plugins.after', result);
     return error ? { error } : result;

@@ -61,6 +61,10 @@ class Resolver {
 
     return id;
   }
+
+  timestamp() {
+    return new Date().getTime();
+  }
 }
 
 export default Resolver;
