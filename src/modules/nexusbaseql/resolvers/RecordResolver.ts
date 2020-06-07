@@ -51,7 +51,20 @@ class RecordResolver extends Resolver {
     let error = this.event('browse.before', args);
     if (error) return { error };
 
-    const data = this.db.get('records').value();
+    const { collectionId, sorts } = args;
+    let records = this.db.get('records')
+    
+    if (collectionId && collectionId !== '') {
+      records = records.filter({ collectionId });
+    }
+
+    if (sorts.length > 0) {
+      const sortFields = sorts.map((sort: any) => `fields.${sort.field}`);
+      const sortDirections = sorts.map((sort: any) => sort.direction);
+      records = records.orderBy(sortFields, sortDirections);
+    }
+
+    const data = records.value();
 
     error = this.event('browse.after', { data });
     return error ? { error } : { data };

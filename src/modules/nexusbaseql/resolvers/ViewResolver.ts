@@ -17,7 +17,7 @@ class ViewResolver extends Resolver {
     let error = this.event('add.before', args);
     if (error) return { error };
 
-    const { collectionId, name = '', type = 'list', fields } = args;
+    const { collectionId, name = '', type = 'list', fields, options } = args;
 
     let id: string = this.uniqueId(this.db.get('wiews'));
     const timestamp = this.timestamp();
@@ -27,6 +27,7 @@ class ViewResolver extends Resolver {
       name,
       type,
       fields,
+      options,
       createdAt: timestamp,
       updatedAt: timestamp
     };

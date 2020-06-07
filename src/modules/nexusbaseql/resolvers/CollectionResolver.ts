@@ -27,7 +27,10 @@ class CollectionResolver extends Resolver {
     const viewResolver = new ViewResolver(this.config);
     const view = viewResolver.createView({
       collectionId,
-      fields: ['f1']
+      fields: ['f1'],
+      options: {
+        groupBy: null
+      }
     }).data;
     
     const timestamp = this.timestamp();
