@@ -49,7 +49,7 @@ class PluginService {
     return this.isClass(PluginClass) ? new PluginClass(this.data) : null;
   }
 
-  action(pluginName: string, databases: any, resolver: any, payload: any) {
+  action(pluginName: string, db: any, resolver: any, payload: any) {
     const plugin = this.getPlugin(pluginName);
     if (!plugin) return { error: `Plugin invalid or not installed: ${pluginName}` };
     if (typeof plugin.action !== 'function') return { error: `Plugin action not found: ${pluginName}` };
@@ -58,17 +58,17 @@ class PluginService {
       type,
       emitter: `plugins.${pluginName}`,
       payload,
-      databases
+      db
     });
     
-    return plugin.action({ databases, event, resolver, payload });
+    return plugin.action({ db, event, resolver, payload });
   }
 
   event(data: {
     type: string,
     emitter: string,
     payload: string,
-    databases: any
+    db: any
   }) {
     const plugins = this.getPlugins();
 

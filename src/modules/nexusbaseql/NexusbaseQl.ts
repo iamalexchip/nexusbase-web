@@ -3,7 +3,7 @@ import * as low from 'lowdb';
 import * as FileSync from 'lowdb/adapters/FileSync';
 import * as path from "path";
 import * as fs from 'fs';
-import { IResolverDbs, IConfig } from './types';
+import { IConfig } from './types';
 import defaultResolvers from './resolvers';
 
 class NexusbaseQl {
@@ -15,18 +15,12 @@ class NexusbaseQl {
     this.storagePath = path.join(config.path, 'data');
   }
 
-  resolve({ workspace, queries }: {
-    workspace: string;
-    queries: any[];
-  }) {
+  resolve(queries: any[]) {
     const result: any = {};
     const data: any = {};
     const errors: any = {};
     const actions = this.getActions();
-    const useWorkspace = workspace ? true : false;
-    const mainDB = this.getMainDB();
-    const workspaceDB = useWorkspace ? this.getWorkspaceDB(mainDB, workspace) : null;
-    const databases: IResolverDbs = { mainDB, workspaceDB };
+    const db = this.getDatabase();
 
     for (const key in queries) {
       const query = queries[key];
@@ -38,10 +32,9 @@ class NexusbaseQl {
       }
 
       const nexusbaseQuery = new Query({
-        databases,
+        db,
         action,
         query,
-        useWorkspace,
         hook: this.config.hook
       });
       const queryResult = nexusbaseQuery.resolve();
@@ -86,7 +79,7 @@ class NexusbaseQl {
     return actions;
   }
 
-  getMainDB() {
+  getDatabase() {
     const mainDBPath = path.join(this.storagePath, 'db.json');
 
     if (!fs.existsSync(this.storagePath)){
@@ -95,34 +88,13 @@ class NexusbaseQl {
 
     const mainDB = low(new FileSync(mainDBPath));
     mainDB.defaults({
-      workspaces: []
-    }).write();
-
-    return mainDB;
-  }
-
-  getWorkspaceDB(mainDB: any, workspace: string) {
-    const workspaceData = mainDB.get('workspaces').find({ id: workspace }).value();
-    
-    if (!workspaceData) {
-      throw new Error(`Workspace not found. Id: ${workspace}`);
-    }
-    
-    const workspaceFolder = path.join(this.storagePath, 'workspaces', workspace);
-    
-    if (!fs.existsSync(workspaceFolder)){
-      fs.mkdirSync(workspaceFolder, { recursive: true });
-    }
-
-    const workspaceDBPath = path.join(workspaceFolder, 'db.json');
-    const workspaceDB = low(new FileSync(workspaceDBPath));
-    workspaceDB.defaults({
+      workspaces: [],
       collections: [],
       views: [],
       records: []
     }).write();
-  
-    return workspaceDB;
+
+    return mainDB;
   }
 }
 

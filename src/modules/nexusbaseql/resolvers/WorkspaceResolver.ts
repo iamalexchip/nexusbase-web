@@ -19,8 +19,7 @@ class WorkspaceResolver extends Resolver {
     let error = this.event('add.before', args);
     if (error) return { error };
 
-    const mainDB = this.mainDB();
-    const workspaceId: string = this.uniqueId(mainDB.get('workspaces'));
+    const workspaceId: string = this.uniqueId(this.db.get('workspaces'));
     const timestamp = this.timestamp();
     const workspaceData = {
       id: workspaceId,
@@ -29,35 +28,32 @@ class WorkspaceResolver extends Resolver {
       updatedAt: timestamp
     };
 
-    mainDB.get('workspaces').push(workspaceData).write();
+    this.db.get('workspaces').push(workspaceData).write();
 
-    const data = mainDB.get('workspaces').find({ id: workspaceId }).value();
-    const result: IResolverResult = { data };
+    const data = this.db.get('workspaces').find({ id: workspaceId }).value();
 
-    error = this.event('add.after', result);
-    return error ? { error } : result;
+    error = this.event('add.after', { data});
+    return error ? { error } : { data };
   }
 
   getWorkspaces(args: any): IResolverResult {
     let error = this.event('browse.before', args);
     if (error) return { error };
 
-    const data = this.mainDB().get('workspaces').value();
-    const result: IResolverResult = { data };
+    const data = this.db.get('workspaces').value();
 
-    error = this.event('browse.after', result);
-    return error ? { error } : result;
+    error = this.event('browse.after', { data });
+    return error ? { error } : { data };
   }
   
   getWorkspace(args: any): IResolverResult {
     let error = this.event('read.before', args);
     if (error) return { error };
 
-    const data = this.mainDB().get('workspaces').find({ id: args.id }).value();
-    const result: IResolverResult = { data };
+    const data = this.db.get('workspaces').find({ id: args.id }).value();
     
-    error = this.event('read.after', result);
-    return error ? { error } : result;
+    error = this.event('read.after', { data });
+    return error ? { error } : { data };
   }
 }
 

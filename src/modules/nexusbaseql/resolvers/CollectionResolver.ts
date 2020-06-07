@@ -19,21 +19,23 @@ class CollectionResolver extends Resolver {
   createCollection(args: any): IResolverResult {
     let error = this.event('add.before', args);
     if (error) return { error };
+
+    const { workspaceId, name, description = '' } = args;
+    // todo: workspace exists
     
-    const workspaceDB = this.workspaceDB();
-    let collectionId: string = this.uniqueId(workspaceDB.get('collections'));
-    
-    const viewResolver = new ViewResolver(this.config());
+    const collectionId: string = this.uniqueId(this.db.get('collections'));
+    const viewResolver = new ViewResolver(this.config);
     const view = viewResolver.createView({
-      collection: collectionId,
+      collectionId,
       fields: ['f1']
     }).data;
     
     const timestamp = this.timestamp();
     const collectionData = {
       id: collectionId,
-      name: args.name,
-      description: args.description || '',
+      workspaceId,
+      name,
+      description,
       fields: [
         {
           id: 'f1',
@@ -47,50 +49,45 @@ class CollectionResolver extends Resolver {
       updatedAt: timestamp
     };
 
-    workspaceDB.get('collections').push(collectionData).write();
+    this.db.get('collections').push(collectionData).write();
 
-    const collection = workspaceDB.get('collections').find({ id: collectionId }).value();
-    const result: IResolverResult = {
-      data: {
-        ...collection,
-        views: [view]
-      }
+    const collection = this.db.get('collections').find({ id: collectionId }).value();
+    const data =  {
+      ...collection,
+      views: [view]
     };
 
-    error = this.event('add.after', result);
-    return error ? { error } : result;
+    error = this.event('add.after', { data });
+    return error ? { error } : { data };
   }
 
   getCollections(args: any): IResolverResult {
     let error = this.event('browse.before', args);
     if (error) return { error };
 
-    const collections = this.workspaceDB().get('collections').value();
-    const result: IResolverResult = { data: collections };
+    const { workspaceId } = args;
+    // todo: workspace exists
 
-    error = this.event('browse.after', result);
-    return error ? { error } : result;
+    const data = this.db.get('collections').filter({ workspaceId }).value();
+
+    error = this.event('browse.after', { data});
+    return error ? { error } : { data };
   }
   
   getCollection(args: any): IResolverResult {
     let error = this.event('read.before', args);
     if (error) return { error };
 
-    const collection = this.workspaceDB().get('collections').find({ id: args.id }).value();
-    const views = this.workspaceDB()
-      .get('views')
-      .filter({ collection: collection.id })
-      .value();
+    const collection = this.db.get('collections').find({ id: args.id }).value();
+    const views = this.db.get('views').filter({ collectionId: collection.id }).value();
     
-    const result: IResolverResult = {
-      data: {
-        ...collection,
-        views
-      }
+    const data = {
+      ...collection,
+      views
     };
 
-    error = this.event('read.after', result);
-    return error ? { error } : result;
+    error = this.event('read.after', { data });
+    return error ? { error } : { data };
   }
 }
 

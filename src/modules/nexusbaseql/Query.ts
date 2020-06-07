@@ -3,8 +3,7 @@ import { IResolver } from "./types";
 interface IQuery {
   action: any;
   query: any;
-  databases: any;
-  useWorkspace: boolean;
+  db: any;
   hook: any;
 }
 
@@ -16,8 +15,7 @@ class Query {
   constructor(config: IQuery) {
     const resolver = config.action.resolver;
     const resolverConfig: IResolver = {
-      databases: config.databases,
-      useWorkspace: config.useWorkspace,
+      db: config.db,
       hook: config.hook,
     };
     this.resolver = new resolver(resolverConfig);

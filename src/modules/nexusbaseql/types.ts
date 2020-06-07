@@ -4,14 +4,8 @@ export interface IConfig {
   resolvers?: any[];
 }
 
-export interface IResolverDbs {
-  mainDB: any;
-  workspaceDB?: any;
-}
-
 export interface IResolver {
-  databases: IResolverDbs;
-  useWorkspace: boolean;
+  db: any;
   hook: any;
 }
 

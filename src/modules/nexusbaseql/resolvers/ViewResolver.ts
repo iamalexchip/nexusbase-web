@@ -17,22 +17,23 @@ class ViewResolver extends Resolver {
     let error = this.event('add.before', args);
     if (error) return { error };
 
-    const workspaceDB = this.workspaceDB();
-    let viewId: string = this.uniqueId(workspaceDB.get('wiews'));
+    const { collectionId, name = '', type = 'list', fields } = args;
+
+    let id: string = this.uniqueId(this.db.get('wiews'));
     const timestamp = this.timestamp();
     const viewData = {
-      id: viewId,
-      name: args.name || '',
-      type: args.type || 'list',
-      collection: args.collection,
-      fields: args.fields,
+      id,
+      collectionId,
+      name,
+      type,
+      fields,
       createdAt: timestamp,
       updatedAt: timestamp
     };
 
-    workspaceDB.get('views').push(viewData).write();
+    this.db.get('views').push(viewData).write();
 
-    const view = workspaceDB.get('views').find({ id: viewId }).value();
+    const view = this.db.get('views').find({ id }).value();
     let result: IResolverResult = { data: view };
 
     error = this.event('add.after', result);

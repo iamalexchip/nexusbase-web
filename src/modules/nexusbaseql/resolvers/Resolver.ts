@@ -2,8 +2,7 @@ import * as shortid from 'shortid';
 import { IResolver } from "../types";
 
 class Resolver {
-  mainDB: any;
-  workspaceDB: any;
+  db: any;
   config: any;
   event: any;
   plugin: any;
@@ -11,41 +10,24 @@ class Resolver {
 
   constructor(config: IResolver) {
     const {
-      useWorkspace,
       hook,
-      databases: {
-        mainDB,
-        workspaceDB
-      }
+      db
     } = config;
 
-    this.config = () => config;
-    this.mainDB = () => mainDB;
-
-    this.workspaceDB = () => {
-      if (useWorkspace === false) {
-        throw new Error('Action requires a workpace data. No workspace give in NexubaseQl request');
-      }
-      
-      return workspaceDB;
-    };
-
-    const databases = {
-      mainDB: this.mainDB(),
-      workspaceDB: useWorkspace ? this.workspaceDB() : null
-    };
+    this.db = db;
+    this.config = config;
     
     this.event = (type: string, payload: any) => {
       return hook.event({
         type,
         emitter: `resolvers.${this.alias}`,
         payload,
-        databases
+        db
       });
     };
 
     this.plugin = (name: string, payload: any) => {
-      return hook.action(name, databases, this.config(), payload);
+      return hook.action(name, db, config, payload);
     };
   }
 

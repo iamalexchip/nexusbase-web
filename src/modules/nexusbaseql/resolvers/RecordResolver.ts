@@ -10,7 +10,8 @@ class RecordResolver extends Resolver {
   static actions():any {
     return {
       createRecord: {},
-      getRecords: {}
+      getRecords: {},
+      getRecord: {},
     }
   }
 
@@ -18,36 +19,57 @@ class RecordResolver extends Resolver {
     let error = this.event('add.before', args);
     if (error) return { error };
 
-    const workspaceDB = this.workspaceDB();
-    let viewId: string = this.uniqueId(workspaceDB.get('wiews'));
+    const { collectionId } = args;
+    const collection = this.db.get('collections').find({ id: collectionId }).value();
+    
+    if (!collection) {
+      let msg = `Collection not found: ${args.collection}`;
+      const error = this.event('add.after', { error: msg }) || msg;
+      return { error };
+    }
+
+    let recordId: string = this.uniqueId(this.db.get('records'));
     const timestamp = this.timestamp();
-    const viewData = {
-      id: viewId,
-      name: args.name || '',
-      collection: args.collection,
-      fields: args.fields,
+    const recordData = {
+      id: recordId,
+      collectionId,
+      fields: {},
       createdAt: timestamp,
       updatedAt: timestamp
     };
 
-    workspaceDB.get('views').push(viewData).write();
+    this.db.get('records').push(recordData).write();
 
-    const view = workspaceDB.get('views').find({ id: viewId }).value();
-    let result: IResolverResult = { data: view };
+    const record = this.db.get('records').find({ id: recordId }).value();
+    const data = record;
 
-    error = this.event('add.after', result);
-    return error ? { error } : result;
+    error = this.event('add.after', { data });
+    return error ? { error } : { data };
   }
 
   getRecords(args: any): IResolverResult {
     let error = this.event('browse.before', args);
     if (error) return { error };
 
-    const records = this.workspaceDB().get('records').value();
-    const result: IResolverResult = { data: records };
+    const data = this.db.get('records').value();
 
-    error = this.event('browse.after', result);
-    return error ? { error } : result;
+    error = this.event('browse.after', { data });
+    return error ? { error } : { data };
+  }
+
+  getRecord(args: any): IResolverResult {
+    let error = this.event('read.before', args);
+    if (error) return { error };
+
+    const record = this.db.get('records').find({ id: args.id }).value();
+    const collection = this.db.get('collections').find({ id: record.collectionId }).value();
+    const data = {
+      ...record,
+      collection
+    };
+
+    error = this.event('read.after', { data });
+    return error ? { error } : { data };
   }
 }
 
