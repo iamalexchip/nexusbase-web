@@ -20,14 +20,14 @@ class ViewResolver extends Resolver {
     let error = this.event('add.before', args);
     if (error) return { error };
 
-    const { collectionId, name = '', type = 'list', fields, options } = args;
+    const { collectionId, title = '', type = 'list', fields, options } = args;
 
     let id: string = this.uniqueId(this.db.get('wiews'));
     const timestamp = this.timestamp();
     const viewData = {
       id,
       collectionId,
-      name,
+      title,
       type,
       fields,
       options,
