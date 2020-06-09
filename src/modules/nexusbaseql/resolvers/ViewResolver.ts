@@ -9,7 +9,10 @@ class ViewResolver extends Resolver {
 
   static actions():any {
     return {
-      createView: {}
+      createView: {},
+      getViews: {},
+      getView: {},
+      updateView: {}
     }
   }
 
@@ -39,6 +42,44 @@ class ViewResolver extends Resolver {
 
     error = this.event('add.after', result);
     return error ? { error } : result;
+  }
+
+  getViews(args: any): IResolverResult {
+    let error = this.event('browse.before', args);
+    if (error) return { error };
+
+    const { collectionId } = args;
+    const data = this.db.get('views').filter({ collectionId }).value();
+
+    error = this.event('browse.after', { data});
+    return error ? { error } : { data };
+  }
+
+  getView(args: any): IResolverResult {
+    let error = this.event('read.before', args);
+    if (error) return { error };
+
+    const { id } = args;
+    const data = this.findView(id).value();
+
+    error = this.event('read.after', { data });
+    return error ? { error } : { data };
+  }
+
+  updateView(args: any): IResolverResult {
+    let error = this.event('read.before', args);
+    if (error) return { error };
+
+    const { id } = args;
+    this.findView(id).assign(args).write();
+    const data = this.findView(id).value();
+
+    error = this.event('read.after', { data });
+    return error ? { error } : { data };
+  }
+
+  findView(id: string) {
+    return this.db.get('views').find({ id });
   }
 }
 

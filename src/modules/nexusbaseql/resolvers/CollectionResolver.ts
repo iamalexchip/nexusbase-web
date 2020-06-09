@@ -69,8 +69,6 @@ class CollectionResolver extends Resolver {
     if (error) return { error };
 
     const { workspaceId } = args;
-    // todo: workspace exists
-
     const data = this.db.get('collections').filter({ workspaceId }).value();
 
     error = this.event('browse.after', { data});
