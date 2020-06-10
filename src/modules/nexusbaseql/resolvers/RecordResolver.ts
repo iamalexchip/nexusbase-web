@@ -64,7 +64,10 @@ class RecordResolver extends Resolver {
       records = records.orderBy(sortFields, sortDirections);
     }
 
-    const data = records.value();
+    const data: any = {
+      items: records.value(),
+      related: this.db.get('records').value()
+    }
 
     error = this.event('browse.after', { data });
     return error ? { error } : { data };

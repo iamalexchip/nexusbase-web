@@ -79,12 +79,28 @@ class CollectionResolver extends Resolver {
     let error = this.event('read.before', args);
     if (error) return { error };
 
-    const collection = this.db.get('collections').find({ id: args.id }).value();
+    const collections = this.db.get('collections');
+    const collection = collections.find({ id: args.id }).value();
     const views = this.db.get('views').filter({ collectionId: collection.id }).value();
+    const relationFields = collection.fields.filter((field: any) => field.type === 'relation');
+    let related = [];
     
-    const data = {
-      ...collection,
-      views
+    if (relationFields.length > 0) {
+      const relatedCollectionIds = relationFields.map((field: any) => field.options.collectionId);
+      
+      const relatedCollections = collections.filter((relatedCollection: any) => {
+        return relatedCollectionIds.includes(relatedCollection.id);
+      });
+
+      related = relatedCollections.value();
+    }
+    
+    const data: any = {
+      item: {
+        ...collection,
+        views
+      },
+      related
     };
 
     error = this.event('read.after', { data });
