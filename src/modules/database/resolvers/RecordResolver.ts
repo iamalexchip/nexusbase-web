@@ -1,4 +1,4 @@
-import { IResolver, IResolverResult } from "../types";
+import { IResolver, IResolverResult } from "../../nexusbaseql/types";
 import Resolver from './Resolver';
 
 class RecordResolver extends Resolver {
@@ -52,7 +52,8 @@ class RecordResolver extends Resolver {
     if (error) return { error };
 
     const { collectionId, sorts } = args;
-    let records = this.db.get('records')
+    let records = this.db.get('records');
+    let related;
     
     if (collectionId && collectionId !== '') {
       records = records.filter({ collectionId });
@@ -64,9 +65,13 @@ class RecordResolver extends Resolver {
       records = records.orderBy(sortFields, sortDirections);
     }
 
+    if (args.related) {
+      related = this.db.get('records').value()
+    }
+
     const data: any = {
       items: records.value(),
-      related: this.db.get('records').value()
+      related,
     }
 
     error = this.event('browse.after', { data });

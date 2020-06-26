@@ -1,4 +1,4 @@
-import { IResolver, IResolverResult } from "../types";
+import { IResolver, IResolverResult } from "../../nexusbaseql/types";
 import Resolver from './Resolver';
 
 class WorkspaceResolver extends Resolver {

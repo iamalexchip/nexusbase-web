@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import NexusbaseQl from './modules/nexusbaseql';
+import { resolvers } from './modules/database';
 import { storagePath } from './config/app';
 import PluginService from './services/PluginService';
 
@@ -9,7 +10,8 @@ let mainWindow: Electron.BrowserWindow;
 
 const nexusbaseQl = new NexusbaseQl({
   path: storagePath,
-  hook: new PluginService
+  hook: new PluginService,
+  resolvers
 });
 
 function createWindow() {
@@ -61,3 +63,15 @@ app.on("activate", () => {
 ipcMain.on('nbql', (event: any, arg: any) => {
   event.returnValue = nexusbaseQl.resolve(arg);
 });
+
+/*
+console.log(nexusbaseQl.resolve({
+  records: {
+    action: 'getRecords',
+    args: {
+      collectionId: 'L0K-xPoZO',
+      sorts: []
+    }
+  }
+}));
+*/

@@ -1,6 +1,5 @@
 import NexusbaseQl from './NexusbaseQl';
 
 export * from './types';
-export * from './resolvers';
-export { default as Resolver } from './resolvers/Resolver';
+export { default as Resolver } from '../database/resolvers/Resolver';
 export default NexusbaseQl;

@@ -4,7 +4,6 @@ import * as FileSync from 'lowdb/adapters/FileSync';
 import * as path from "path";
 import * as fs from 'fs';
 import { IConfig } from './types';
-import defaultResolvers from './resolvers';
 
 class NexusbaseQl {
   config: IConfig;
@@ -15,7 +14,7 @@ class NexusbaseQl {
     this.storagePath = path.join(config.path, 'data');
   }
 
-  resolve(queries: any[]) {
+  resolve(queries: any) {
     const result: any = {};
     const data: any = {};
     const errors: any = {};
@@ -61,8 +60,7 @@ class NexusbaseQl {
 
   getActions() {
     const actions: any = {};
-    const customResolvers = this.config.resolvers || []; 
-    const resolvers = [ ...defaultResolvers, ...customResolvers ];
+    const resolvers = this.config.resolvers; 
 
     for (const resolver of resolvers) {
       for (const name in resolver.actions()) {
@@ -93,6 +91,14 @@ class NexusbaseQl {
       views: [],
       records: []
     }).write();
+
+    mainDB._.mixin({
+      model: (array, model) => array.map((item: object) => new model(item)),
+      populate: (array, keys, db) => array.map((item: any) => {
+        item.populate(keys, db);
+        return item;
+      })
+    });
 
     return mainDB;
   }
