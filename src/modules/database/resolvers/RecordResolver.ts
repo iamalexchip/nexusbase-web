@@ -12,6 +12,7 @@ class RecordResolver extends Resolver {
       createRecord: {},
       getRecords: {},
       getRecord: {},
+      updateRecord: {}
     }
   }
 
@@ -90,6 +91,43 @@ class RecordResolver extends Resolver {
     };
 
     error = this.event('read.after', { data });
+    return error ? { error } : { data };
+  }
+
+  updateRecord(args: any): IResolverResult {
+    let error = this.event('edit.before', args);
+    if (error) return { error };
+
+    const { collectionId } = args;
+    const collection = this.db.get('collections').find({ id: collectionId }).value();
+    
+    if (!collection) {
+      let msg = `Collection not found: ${args.collectionId}`;
+      const error = this.event('edit.after', { error: msg }) || msg;
+      return { error };
+    }
+
+    const record = this.db.get('records').find({ id: args.id });
+    const oldRecord = record.value();
+
+    if (!oldRecord) {
+      let msg = `Record not found: ${args.id}`;
+      const error = this.event('edit.after', { error: msg }) || msg;
+      return { error };
+    }
+
+    const timestamp = this.timestamp(); 
+    const recordData = {
+      ...oldRecord,
+      fields: args.fields,
+      updatedAt: timestamp
+    };
+
+    record.assign(recordData).write();
+
+    const data = record;
+
+    error = this.event('edit.after', { data });
     return error ? { error } : { data };
   }
 }
