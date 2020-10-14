@@ -16,7 +16,7 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^6.0.8",
+    "electron": "^7.2.4",
     "electron-devtools-installer": "^3.0.0",
     "nodemon": "^2.0.4",
     "tslint": "^5.19.0",
