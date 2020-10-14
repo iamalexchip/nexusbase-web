@@ -42,6 +42,13 @@ class RecordResolver extends Resolver {
     this.db.get('records').push(recordData).write();
 
     const record = this.db.get('records').find({ id: recordId }).value();
+
+    if (!record) {
+      let msg = `Error creating record`;
+      const error = this.event('add.after', { error: msg }) || msg;
+      return { error };
+    }
+
     const data = record;
 
     error = this.event('add.after', { data });
@@ -84,7 +91,21 @@ class RecordResolver extends Resolver {
     if (error) return { error };
 
     const record = this.db.get('records').find({ id: args.id }).value();
+
+    if (!record) {
+      let msg = `Record not found: ${args.id}`;
+      const error = this.event('read.after', { error: msg }) || msg;
+      return { error };
+    }
+
     const collection = this.db.get('collections').find({ id: record.collectionId }).value();
+
+    if (!collection) {
+      let msg = `Collection not found: ${record.collectionId}`;
+      const error = this.event('read.after', { error: msg }) || msg;
+      return { error };
+    }
+
     const data = {
       ...record,
       collection
