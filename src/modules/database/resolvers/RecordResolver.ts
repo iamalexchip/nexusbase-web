@@ -67,12 +67,6 @@ class RecordResolver extends Resolver {
       records = records.filter({ collectionId });
     }
 
-    if (sorts.length > 0) {
-      const sortFields = sorts.map((sort: any) => `fields.${sort.field}`);
-      const sortDirections = sorts.map((sort: any) => sort.direction);
-      records = records.orderBy(sortFields, sortDirections);
-    }
-
     if (args.related) {
       related = this.db.get('records').value()
     }
