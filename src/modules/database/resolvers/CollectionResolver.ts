@@ -13,7 +13,25 @@ class CollectionResolver extends Resolver {
       createCollection: {},
       getCollections: {},
       getCollection: {},
+      updateField: {}
     }
+  }
+
+  relatedCollections(collection:any) {
+    let related = [];
+    const relationFields = collection.fields.filter((field: any) => field.type === 'relation');
+      
+    if (relationFields.length > 0) {
+      const relatedCollectionIds = relationFields.map((field: any) => field.options.collectionId);
+      
+      const relatedCollections = this.db.get('collections').filter((relatedCollection: any) => {
+        return relatedCollectionIds.includes(relatedCollection.id);
+      });
+  
+      related = relatedCollections.value();
+    }
+  
+    return related;
   }
 
   createCollection(args: any): IResolverResult {
@@ -79,31 +97,56 @@ class CollectionResolver extends Resolver {
     let error = this.event('read.before', args);
     if (error) return { error };
 
-    const collections = this.db.get('collections');
-    const collection = collections.find({ id: args.id }).value();
+    const collection = this.db.get('collections').find({ id: args.id }).value();
     const views = this.db.get('views').filter({ collectionId: collection.id }).value();
-    const relationFields = collection.fields.filter((field: any) => field.type === 'relation');
-    let related = [];
-    
-    if (relationFields.length > 0) {
-      const relatedCollectionIds = relationFields.map((field: any) => field.options.collectionId);
-      
-      const relatedCollections = collections.filter((relatedCollection: any) => {
-        return relatedCollectionIds.includes(relatedCollection.id);
-      });
-
-      related = relatedCollections.value();
-    }
-    
     const data: any = {
-      item: {
+      collection: {
         ...collection,
         views
       },
-      related
+      related: this.relatedCollections(collection)
     };
 
     error = this.event('read.after', { data });
+    return error ? { error } : { data };
+  }
+
+  updateField(args: any): IResolverResult {
+    let error = this.event('edit.before', args);
+    if (error) return { error };
+
+    const { collectionId, fieldId, data: updatedField } = args;
+    const collectionRef = this.db.get('collections').find({ id: collectionId });
+    let collection = collectionRef.value();
+    
+    if (!collection) {
+      let msg = `Collection not found: ${collectionId}`;
+      const error = this.event('edit.after', { error: msg }) || msg;
+      return { error };
+    }
+
+    const field = collection.fields.find((field: any) => field.id === fieldId);
+
+    if (!field) {
+      let msg = `Collection [${collectionId}] field not found [${fieldId}]`;
+      const error = this.event('edit.after', { error: msg }) || msg;
+      return { error };
+    }
+
+    const fieldIndex = collection.fields.findIndex((field: any) => field.id === fieldId);
+    const timestamp = this.timestamp(); 
+    collection.fields[fieldIndex] = { ...updatedField, id: fieldId };
+    collection.updatedAt = timestamp;
+
+    collectionRef.assign(collection).write();
+    
+    const views = this.db.get('views').filter({ collectionId: collection.id }).value();
+    const data = {
+      collection: { ...collectionRef.value(), views },
+      related: this.relatedCollections(collection)
+    };
+
+    error = this.event('edit.after', { data });
     return error ? { error } : { data };
   }
 }
