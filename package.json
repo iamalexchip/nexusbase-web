@@ -2,12 +2,6 @@
   "name": "nexusbase-desktop",
   "version": "1.0.0",
   "description": "A minimal Electron application written with Typescript",
-  "scripts": {
-    "compile": "tsc",
-    "lint": "tslint -c tslint.json -p tsconfig.json",
-    "start": "yarn compile && electron ./app/main.js",
-    "dev": "nodemon"
-  },
   "repository": "https://github.com/electron/electron-quick-start-typescript",
   "keywords": [
     "Electron",
@@ -15,17 +9,29 @@
   ],
   "author": "GitHub",
   "license": "CC0-1.0",
+  "scripts": {
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "web": "cd web && cross-env BROWSER=none yarn react-scripts start",
+    "compile": "tsc",
+    "electron": "yarn compile && electron ./app/main.js",
+    "start": "concurrently \"yarn web\" \"wait-on http://localhost:3000 && yarn electron\"",
+    "dev": "nodemon"
+  },
   "devDependencies": {
+    "concurrently": "^5.3.0",
     "electron": "^7.2.4",
+    "electron-builder": "^22.9.1",
     "electron-devtools-installer": "^3.0.0",
     "nodemon": "^2.0.4",
     "tslint": "^5.19.0",
-    "typescript": "^3.6.0"
+    "typescript": "^3.6.0",
+    "wait-on": "^5.2.0"
   },
   "dependencies": {
     "@types/electron-devtools-installer": "^2.2.0",
     "@types/lowdb": "^1.0.9",
     "@types/shortid": "^0.0.29",
+    "electron-is-dev": "^1.2.0",
     "lowdb": "^1.0.0",
     "shortid": "^2.2.15"
   }

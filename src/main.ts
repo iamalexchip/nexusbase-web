@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
+const isDev = require('electron-is-dev');
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import NexusbaseQl from './modules/nexusbaseql';
 import { resolvers } from './modules/database';
@@ -24,26 +25,29 @@ function createWindow() {
   });
 
   mainWindow.loadURL(
-    true
+    isDev
       ? 'http://localhost:3000'
       : `file://${path.join(__dirname, '../build/index.html')}`,
   )
 
-  mainWindow.webContents.openDevTools();
-
+  
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
-
-  // Install React Dev Tools
-  const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
   
-  installExtension(REACT_DEVELOPER_TOOLS).then((name:string) => {
-    console.log(`Added Extension:  ${name}`);
-  })
-  .catch((err:any) => {
-    console.log('An error occurred: ', err);
-  });
+  if (isDev) {
+    mainWindow.webContents.openDevTools();
+    
+    // Install React Dev Tools
+    const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
+    
+    installExtension(REACT_DEVELOPER_TOOLS).then((name:string) => {
+      console.log(`Added Extension:  ${name}`);
+    })
+    .catch((err:any) => {
+      console.log('An error occurred: ', err);
+    });
+  }
 }
 
 app.on("ready", createWindow);
