@@ -12,7 +12,8 @@ class RecordResolver extends Resolver {
       createRecord: {},
       getRecords: {},
       getRecord: {},
-      updateRecord: {}
+      updateRecord: {},
+      deleteRecord: {}
     }
   }
 
@@ -143,6 +144,27 @@ class RecordResolver extends Resolver {
     const data = record;
 
     error = this.event('edit.after', { data });
+    return error ? { error } : { data };
+  }
+
+  deleteRecord(args: any): IResolverResult {
+    let error = this.event('delete.before', args);
+    if (error) return { error };
+
+    const record = this.db.get('records').find({ id: args.id });
+    const recordData = record.value();
+
+    if (!recordData) {
+      let msg = `Record not found: ${args.id}`;
+      const error = this.event('delete.after', { error: msg }) || msg;
+      return { error };
+    }
+
+    const data = { ...recordData };
+
+    this.db.get('records').remove({ id: args.id }).write();
+    
+    error = this.event('delete.after', { data });
     return error ? { error } : { data };
   }
 }
