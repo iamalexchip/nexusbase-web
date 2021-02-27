@@ -1,0 +1,32 @@
+.menu {
+    border: 1px solid;
+    position: absolute;
+    background-color: #fff;
+    width: 11em;
+    display: block;
+    text-align: left;
+    font-weight: normal;
+}
+
+.menu > div {
+    padding: 10px 10px;
+}
+
+.menu > div:hover {
+    background-color: #eee;
+}
+
+.form {
+    position: absolute;
+    width: 20em;
+    border: 1px solid;
+    background-color: #fff;
+    padding: 10px 10px;
+    font-weight: normal;
+}
+
+.form > .footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;   
+}
