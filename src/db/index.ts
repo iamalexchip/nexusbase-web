@@ -13,19 +13,19 @@ export const appDb = () => {
     lastWorkspace: '9VxN5dbt8',
   };
   const adapter = new LocalStorage<AppDB>('nexusbase', { defaultValue });
-  return low(adapter);
 
+  return low(adapter);
 };
 
 export const workspaceDb = (WorkspaceId: string) => {
-  const defaultValue = {
+  const defaultValue: WorkspaceDB = {
     workspace: {
       id: '9VxN5dbt8',
-      name: 'My Workspace',
-      kl: 'yrut',
+      name: 'Demo workspace',
     },
+    collections: [{ id: '9VxN5dbt8', name: 'Todos' }],
   };
   const adapter = new LocalStorage<WorkspaceDB>(WorkspaceId, { defaultValue });
-  return  low(adapter);
 
+  return low(adapter);
 };

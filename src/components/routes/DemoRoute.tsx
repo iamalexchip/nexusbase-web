@@ -1,7 +1,6 @@
-import DemoComponent from '../DemoComponent';
 import React, { FC } from 'react';
-
 import { useQuery } from '@apollo/client';
+import DemoComponent from '../DemoComponent';
 import demoQuery from '../../api/queries/demoQuery';
 
 const Demo: FC = () => {

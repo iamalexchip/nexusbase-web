@@ -1,4 +1,5 @@
-import { Workspace } from './store/workspace';
+import { Collection } from './store/collections';
+import { Workspace } from './store/workspaces';
 
 export type AppDB = {
   workspaces: Workspace[];
@@ -8,4 +9,5 @@ export type AppDB = {
 
 export type WorkspaceDB = {
   workspace: Workspace;
+  collections: Collection[];
 };

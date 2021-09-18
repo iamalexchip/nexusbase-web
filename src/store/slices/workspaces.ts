@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk } from '../index';
 import { OnThunkError, SliceState } from '../../interfaces/store';
-import { Workspace, WorkspacesState } from '../../interfaces/store/workspace';
-import { appDb } from '../../db';
+import { Workspace, WorkspacesState } from '../../interfaces/store/workspaces';
+import { appDb, workspaceDb } from '../../db';
+import { apiUrl } from '../../utils/misc';
 
 const initialState: SliceState<WorkspacesState> = {
   loading: false,
@@ -28,10 +29,10 @@ export const workspacesSlice = createSlice({
   },
 });
 
-const { setLoading, setWorkspaces } = workspacesSlice.actions;
+const { setLoading, setWorkspaces, setWorkspace } = workspacesSlice.actions;
 export const { reducer: workspacesReducer } = workspacesSlice;
 
-export const fetchWorkspaces = (onError: OnThunkError): AppThunk => async (
+export const getWorkspaces = (onError: OnThunkError): AppThunk => async (
   dispatch
 ) => {
   dispatch(setLoading(true));
@@ -40,6 +41,22 @@ export const fetchWorkspaces = (onError: OnThunkError): AppThunk => async (
     const db = appDb();
     const workspaces = db.get('workspaces').value();
     dispatch(setWorkspaces(workspaces));
+  } catch (err) {
+    onError(err);
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
+export const getWorkspace = (onError: OnThunkError): AppThunk => async (
+  dispatch
+) => {
+  dispatch(setLoading(true));
+
+  try {
+    const db = workspaceDb(apiUrl());
+    const workspace = db.get('workspace').value();
+    dispatch(setWorkspace(workspace));
   } catch (err) {
     onError(err);
   } finally {

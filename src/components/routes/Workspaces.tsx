@@ -1,23 +1,24 @@
-import { fetchWorkspaces } from '../../store/slices/workspaces';
+import { getWorkspaces } from '../../store/slices/workspaces';
 import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
 import React, { FC, useEffect } from 'react';
 
-export const MyWorkspaces: FC = () => {
+export const Workspaces: FC = () => {
   const dispatch = useAppDispatch();
   const workspaces = useAppSelector(
     (store) => store.workspaces.data.workspaces
   );
-  console.log({ workspaces });
+
   useEffect(() => {
-    dispatch(fetchWorkspaces(() => {}));
+    dispatch(getWorkspaces(() => {}));
   }, [dispatch]);
+
   return (
     <div className="flex flex-col items-center">
       <h2>Workspaces</h2>
       {workspaces ? (
         <div>
           {workspaces.map((workspace) => (
-            <li>{workspace.name}</li>
+            <li key={workspace.id}>{workspace.name}</li>
           ))}
         </div>
       ) : (
@@ -26,3 +27,5 @@ export const MyWorkspaces: FC = () => {
     </div>
   );
 };
+
+export default Workspaces;
