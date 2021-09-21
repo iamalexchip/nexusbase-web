@@ -3,7 +3,12 @@ export type Workspace = {
   name: string;
 };
 
-export type WorkspacesState = {
+export type WorkspacesLoading = {
+  workspaces: Workspace;
+  workspace: Workspace | null;
+};
+
+export type WorkspacesData = {
   workspaces: Workspace[] | null;
   workspace: Workspace | null;
 };

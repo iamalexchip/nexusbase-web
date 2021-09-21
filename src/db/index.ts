@@ -17,13 +17,14 @@ export const appDb = () => {
   return low(adapter);
 };
 
-export const workspaceDb = (WorkspaceId: string) => {
+export const workspaceDb = (WorkspaceId: string = 'dev') => {
   const defaultValue: WorkspaceDB = {
     workspace: {
       id: '9VxN5dbt8',
       name: 'Demo workspace',
     },
-    collections: [{ id: '9VxN5dbt8', name: 'Todos' }],
+    collections: [],
+    views: [],
   };
   const adapter = new LocalStorage<WorkspaceDB>(WorkspaceId, { defaultValue });
 
