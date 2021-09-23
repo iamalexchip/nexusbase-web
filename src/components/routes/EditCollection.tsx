@@ -1,11 +1,11 @@
 import React, { FC, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
 import { getCollection } from '../../store/slices/collections';
 import routes from '../../utils/routes';
 import BreadCrumbs from '../Breadcrumbs';
 
-const ViewCollection: FC = () => {
+const EditCollection: FC = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();
   const { collection } = useAppSelector(({ collections }) => ({
@@ -22,13 +22,21 @@ const ViewCollection: FC = () => {
 
   return (
     <div>
-      <BreadCrumbs data={[{ text: collection.name }]} />
-      <h2>{collection.name}</h2>
+      <BreadCrumbs
+        data={[
+          {
+            text: collection.name,
+            url: routes.collections.read(collection.id),
+          },
+          { text: 'edit' },
+        ]}
+      />
+      <h3>Edit collection</h3>
       <hr />
-      <Link to={routes.collections.edit(collection.id)}>Edit</Link>
+      Delete
       <hr />
     </div>
   );
 };
 
-export default ViewCollection;
+export default EditCollection;

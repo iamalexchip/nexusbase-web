@@ -1,14 +1,18 @@
 import React, { FC, Fragment } from 'react';
 import { Crumb } from '../interfaces/components';
+import routes from '../utils/routes';
 
 const LinkWrapper: FC<{ url: string }> = ({ children, url }) => (
   <a href={url}>{children}</a>
 );
 
-const BreadCrumbs: FC<{ data: Crumb[] }> = ({ data }) => {
+type Props = { data?: Crumb[] };
+
+const BreadCrumbs: FC<Props> = ({ data = [] }) => {
+  const crumbs = [{ text: 'Home', url: routes.home() }, ...data];
   return (
     <div>
-      {data.map(({ text, url }, index) => (
+      {crumbs.map(({ text, url }, index) => (
         <Fragment key={index}>
           {' > '}
           <span>

@@ -43,7 +43,7 @@ const Home: FC = () => {
 
   return (
     <div>
-      <BreadCrumbs data={[{ text: 'Home', url: routes.home() }]} />
+      <BreadCrumbs />
       <h2>{workspace.name}</h2>
       <hr />
       <button onClick={handleCreateCollection}>
