@@ -1,9 +1,31 @@
+import { Formik } from 'formik';
 import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
 import { getCollection } from '../../store/slices/collections';
 import routes from '../../utils/routes';
 import BreadCrumbs from '../Breadcrumbs';
+import TextInput from '../inputs/TextInput';
+
+type FormData = {
+  name: string;
+};
+
+const CollectionForm: FC<{
+  initialValues: FormData;
+  onSubmit: (values: FormData) => void;
+}> = ({ initialValues, onSubmit }) => (
+  <Formik initialValues={initialValues} onSubmit={onSubmit}>
+    {({ isSubmitting }) => (
+      <div>
+        <TextInput name="name" />
+        <button type="submit" disabled={isSubmitting}>
+          Submit
+        </button>
+      </div>
+    )}
+  </Formik>
+);
 
 const EditCollection: FC = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +42,10 @@ const EditCollection: FC = () => {
     return <div>Loading....</div>;
   }
 
+  const handleSubmit = (values: FormData) => {
+    console.log(values);
+  };
+
   return (
     <div>
       <BreadCrumbs
@@ -35,6 +61,10 @@ const EditCollection: FC = () => {
       <hr />
       Delete
       <hr />
+      <CollectionForm
+        initialValues={{ name: collection.name }}
+        onSubmit={handleSubmit}
+      />
     </div>
   );
 };

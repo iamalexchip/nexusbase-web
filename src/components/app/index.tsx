@@ -5,7 +5,7 @@ import GlobalStyle from '../../theme/GlobalStyle';
 import { store } from '../../store';
 import theme from '../../theme/tailwind';
 import Routes from './Routes';
-import '../../theme/index.css';
+//import '../../theme/index.css';
 
 const App: FC = () => (
   <Provider store={store}>
