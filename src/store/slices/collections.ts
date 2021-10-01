@@ -7,6 +7,7 @@ import {
 } from '../../interfaces/store/collections';
 import { workspaceDb } from '../../db';
 import CollectionModel from '../../db/models/CollectionModel';
+import { IupdateCollectionDetails } from '../../interfaces/models';
 
 const initialState: SliceState<LoadingState, CollectionsData> = {
   loading: {
@@ -62,6 +63,7 @@ const {
   setNewId,
   setFecthingOne,
   setFetchingList,
+  setUpdating,
 } = collectionsSlice.actions;
 export const { reducer: collectionsReducer } = collectionsSlice;
 
@@ -114,5 +116,24 @@ export const getCollection = (
     onError(err);
   } finally {
     dispatch(setFecthingOne(false));
+  }
+};
+
+export const updateCollectionDetails = (
+  id: string,
+  data: IupdateCollectionDetails,
+  onError: OnThunkError
+): AppThunk => async (dispatch) => {
+  dispatch(setUpdating(true));
+
+  try {
+    const db = workspaceDb();
+    const collectionModel = new CollectionModel(db);
+    const collection = collectionModel.updateDetails(id, data);
+    dispatch(setCollection(collection));
+  } catch (err) {
+    onError(err);
+  } finally {
+    dispatch(setUpdating(false));
   }
 };

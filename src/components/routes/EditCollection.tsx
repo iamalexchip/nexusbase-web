@@ -2,7 +2,10 @@ import { Formik } from 'formik';
 import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
-import { getCollection } from '../../store/slices/collections';
+import {
+  getCollection,
+  updateCollectionDetails,
+} from '../../store/slices/collections';
 import routes from '../../utils/routes';
 import BreadCrumbs from '../Breadcrumbs';
 import TextInput from '../inputs/TextInput';
@@ -14,24 +17,28 @@ type FormData = {
 const CollectionForm: FC<{
   initialValues: FormData;
   onSubmit: (values: FormData) => void;
-}> = ({ initialValues, onSubmit }) => (
+  isLoading: boolean;
+}> = ({ initialValues, onSubmit, isLoading }) => (
   <Formik initialValues={initialValues} onSubmit={onSubmit}>
-    {({ isSubmitting }) => (
-      <div>
-        <TextInput name="name" />
-        <button type="submit" disabled={isSubmitting}>
-          Submit
-        </button>
-      </div>
-    )}
+    {({ submitForm }) => {
+      return (
+        <div>
+          <TextInput name="name" />
+          <button type="submit" disabled={isLoading} onClick={submitForm}>
+            Submit
+          </button>
+        </div>
+      );
+    }}
   </Formik>
 );
 
 const EditCollection: FC = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();
-  const { collection } = useAppSelector(({ collections }) => ({
+  const { collection, isUpdating } = useAppSelector(({ collections }) => ({
     collection: collections.data.collection,
+    isUpdating: collections.loading.isUpdating,
   }));
 
   useEffect(() => {
@@ -43,7 +50,7 @@ const EditCollection: FC = () => {
   }
 
   const handleSubmit = (values: FormData) => {
-    console.log(values);
+    dispatch(updateCollectionDetails(id, values, () => {}));
   };
 
   return (
@@ -64,6 +71,7 @@ const EditCollection: FC = () => {
       <CollectionForm
         initialValues={{ name: collection.name }}
         onSubmit={handleSubmit}
+        isLoading={isUpdating}
       />
     </div>
   );

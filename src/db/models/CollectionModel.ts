@@ -1,4 +1,5 @@
 import { WorkspaceDbInstance } from '../../interfaces/db';
+import { IupdateCollectionDetails } from '../../interfaces/models';
 import { Attribute, Collection } from '../../interfaces/store/collections';
 import BaseModel from './BaseModel';
 import ViewModel from './ViewModel';
@@ -74,12 +75,25 @@ export default class CollectionModel extends BaseModel {
     return this.db.get('collections').value();
   }
 
-  find(id: string) {
+  find(id: string, includeRelated: boolean = false) {
     const collection = this.db.get('collections').find({ id }).value();
+
     return {
       ...collection,
-      related: this.relatedCollections(collection),
+      related: includeRelated ? this.relatedCollections(collection) : null,
     };
+  }
+
+  updateDetails(collectionId: string, data: IupdateCollectionDetails) {
+    const collectionRef = this.db.get('collections').find({ id: collectionId });
+    const collection = this.find(collectionId, true);
+
+    collection.name = data.name || collection.name;
+    collection.description = data.description || collection.description;
+
+    collectionRef.assign(collection).write();
+
+    return collectionRef.value();
   }
 
   addAttribute(collectionId: string) {
