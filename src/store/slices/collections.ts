@@ -31,7 +31,7 @@ export const collectionsSlice = createSlice({
     setCollections(state, { payload }: PayloadAction<Collection[]>) {
       state.data.collections = payload;
     },
-    setCollection(state, { payload }: PayloadAction<Collection>) {
+    setCollection(state, { payload }: PayloadAction<Collection | null>) {
       state.data.collection = payload;
       state.data.newId = null;
     },
@@ -131,6 +131,24 @@ export const updateCollectionDetails = (
     const collectionModel = new CollectionModel(db);
     const collection = collectionModel.updateDetails(id, data);
     dispatch(setCollection(collection));
+  } catch (err) {
+    onError(err);
+  } finally {
+    dispatch(setUpdating(false));
+  }
+};
+
+export const deleteCollection = (
+  id: string,
+  onError: OnThunkError
+): AppThunk => async (dispatch) => {
+  dispatch(setUpdating(true));
+
+  try {
+    const db = workspaceDb();
+    const collectionModel = new CollectionModel(db);
+    collectionModel.delete(id);
+    dispatch(setCollection(null));
   } catch (err) {
     onError(err);
   } finally {

@@ -145,4 +145,10 @@ export default class CollectionModel extends BaseModel {
 
     return collectionRef.value();
   }
+
+  delete(collectionId: string) {
+    this.find(collectionId, true);
+    this.db.get('collections').remove({ id: collectionId }).write();
+    return true;
+  }
 }

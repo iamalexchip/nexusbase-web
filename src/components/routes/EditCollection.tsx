@@ -1,8 +1,9 @@
 import { Formik } from 'formik';
-import React, { FC, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { FC, useEffect, useState } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
 import {
+  deleteCollection,
   getCollection,
   updateCollectionDetails,
 } from '../../store/slices/collections';
@@ -35,15 +36,27 @@ const CollectionForm: FC<{
 
 const EditCollection: FC = () => {
   const dispatch = useAppDispatch();
+  const history = useHistory();
+  const [hasDeleted, setHasDeleted] = useState(false);
   const { id } = useParams<{ id: string }>();
-  const { collection, isUpdating } = useAppSelector(({ collections }) => ({
-    collection: collections.data.collection,
-    isUpdating: collections.loading.isUpdating,
-  }));
+  const { collection, isUpdating, isDeleting } = useAppSelector(
+    ({ collections }) => ({
+      collection: collections.data.collection,
+      isUpdating: collections.loading.isUpdating,
+      isDeleting: collections.loading.isDeleting,
+    })
+  );
 
   useEffect(() => {
     dispatch(getCollection(id, () => {}));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (hasDeleted && !collection) {
+      history.push(routes.home());
+      //todo: toast deleted
+    }
+  }, [history, hasDeleted, collection]);
 
   if (!collection) {
     return <div>Loading....</div>;
@@ -51,6 +64,14 @@ const EditCollection: FC = () => {
 
   const handleSubmit = (values: FormData) => {
     dispatch(updateCollectionDetails(id, values, () => {}));
+  };
+
+  const handleDelete = () => {
+    const confirmDelete = window.confirm('Are you sure you want to delete?');
+    if (confirmDelete) {
+      dispatch(deleteCollection(id, () => {}));
+      setHasDeleted(true);
+    }
   };
 
   return (
@@ -66,7 +87,9 @@ const EditCollection: FC = () => {
       />
       <h3>Edit collection</h3>
       <hr />
-      Delete
+      <button type="submit" disabled={isDeleting} onClick={handleDelete}>
+        Delete
+      </button>
       <hr />
       <CollectionForm
         initialValues={{ name: collection.name }}
