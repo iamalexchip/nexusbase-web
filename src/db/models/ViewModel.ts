@@ -1,4 +1,5 @@
 import { WorkspaceDbInstance } from '../../interfaces/db';
+import { IupdateView } from '../../interfaces/models';
 import { View, ViewTypes } from '../../interfaces/store/views';
 import BaseModel from './BaseModel';
 
@@ -10,13 +11,13 @@ export default class ViewModel extends BaseModel {
   create({
     collectionId,
     name = '',
-    type = 'list',
-    attributes,
+    type = 'table',
+    attributes = [],
   }: {
     collectionId: string;
     name?: string;
     type?: ViewTypes;
-    attributes: string[];
+    attributes?: string[];
   }) {
     const id = this.generateId();
     const timestamp = Date.now();
@@ -43,7 +44,7 @@ export default class ViewModel extends BaseModel {
     return this.db.get('views').find({ id });
   }
 
-  updateView(id: string, data: View) {
+  update(id: string, data: IupdateView) {
     const viewRef = this.find(id);
     const view = viewRef.value();
 
@@ -51,7 +52,7 @@ export default class ViewModel extends BaseModel {
       throw new Error(`View not found: ${id}`);
     }
 
-    viewRef.assign({ ...view, updatedAt: Date.now() }).write();
+    viewRef.assign({ ...view, ...data, updatedAt: Date.now() }).write();
     return this.find(view.id).value();
   }
 }

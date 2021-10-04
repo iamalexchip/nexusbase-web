@@ -92,6 +92,7 @@ export default class CollectionModel extends BaseModel {
     collection.description = data.description || collection.description;
 
     collectionRef.assign(collection).write();
+    collection.updatedAt = Date.now();
 
     return collectionRef.value();
   }

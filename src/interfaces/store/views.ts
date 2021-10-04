@@ -2,7 +2,7 @@ export type ViewOptions = {
   groupBy?: null;
 };
 
-export type ViewTypes = 'list';
+export type ViewTypes = 'list' | 'table';
 
 export type View = {
   id: string;
@@ -13,4 +13,10 @@ export type View = {
   options: ViewOptions;
   createdAt: number;
   updatedAt: number;
+};
+
+export type ViewsData = {
+  views: View[] | null;
+  view: View | null;
+  newId: string | null;
 };
