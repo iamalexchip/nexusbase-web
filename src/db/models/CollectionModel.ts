@@ -105,14 +105,29 @@ export default class CollectionModel extends BaseModel {
       throw new Error(`Collection not found: ${collectionId}`);
     }
 
+    const attributeIds = collection.attributes.map((attribute) =>
+      Number(attribute.id.substr(1))
+    );
+    const attributeId = `a${Math.max(...attributeIds) + 1}`;
+
     collection.attributes.push({
-      id: 'f1',
+      id: attributeId,
       type: 'line',
-      label: 'Title',
+      label: `Attr ${attributeId.substr(1)}`,
     });
     collection.updatedAt = Date.now();
+    collectionRef.assign(collection);
 
-    collectionRef.assign(collection).write();
+    // add new attribute to views with a type of table
+    this.db
+      .get('views')
+      .filter({ collectionId: collection.id, viewType: 'table' })
+      .forEach((view) => {
+        view.attributes.push(attributeId);
+      })
+      .value();
+
+    this.db.write();
 
     return collectionRef.value();
   }
@@ -148,8 +163,9 @@ export default class CollectionModel extends BaseModel {
   }
 
   delete(collectionId: string) {
-    this.find(collectionId, true);
+    this.find(collectionId);
     this.db.get('collections').remove({ id: collectionId }).write();
+    this.db.get('views').remove({ collectionId }).write();
     return true;
   }
 }

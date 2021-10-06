@@ -11,12 +11,12 @@ export default class ViewModel extends BaseModel {
   create({
     collectionId,
     name = '',
-    type = 'table',
+    viewType = 'table',
     attributes = [],
   }: {
     collectionId: string;
     name?: string;
-    type?: ViewTypes;
+    viewType?: ViewTypes;
     attributes?: string[];
   }) {
     const id = this.generateId();
@@ -25,7 +25,7 @@ export default class ViewModel extends BaseModel {
       id,
       collectionId,
       name,
-      type,
+      viewType,
       attributes,
       options: {},
       createdAt: timestamp,

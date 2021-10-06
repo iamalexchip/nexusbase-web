@@ -8,6 +8,7 @@ import {
 import { workspaceDb } from '../../db';
 import CollectionModel from '../../db/models/CollectionModel';
 import { IupdateCollectionDetails } from '../../interfaces/models';
+import { setSynced as setViewsSynced } from './views';
 
 const initialState: SliceState<LoadingState, CollectionsData> = {
   loading: {
@@ -21,6 +22,7 @@ const initialState: SliceState<LoadingState, CollectionsData> = {
     collections: null,
     collection: null,
     newId: null,
+    isSynced: true,
   },
 };
 
@@ -30,13 +32,18 @@ export const collectionsSlice = createSlice({
   reducers: {
     setCollections(state, { payload }: PayloadAction<Collection[]>) {
       state.data.collections = payload;
+      state.data.isSynced = true;
     },
     setCollection(state, { payload }: PayloadAction<Collection | null>) {
       state.data.collection = payload;
       state.data.newId = null;
+      state.data.isSynced = true;
     },
     setNewId(state, { payload }: PayloadAction<string | null>) {
       state.data.newId = payload;
+    },
+    setSynced(state, { payload }: PayloadAction<boolean>) {
+      state.data.isSynced = payload;
     },
     setCreating(state, { payload }: PayloadAction<boolean>) {
       state.loading.isCreating = payload;
@@ -61,6 +68,7 @@ const {
   setCollection,
   setCreating,
   setNewId,
+  setSynced,
   setFecthingOne,
   setFetchingList,
   setUpdating,
@@ -131,6 +139,25 @@ export const updateCollectionDetails = (
     const collectionModel = new CollectionModel(db);
     const collection = collectionModel.updateDetails(id, data);
     dispatch(setCollection(collection));
+  } catch (err) {
+    onError(err);
+  } finally {
+    dispatch(setUpdating(false));
+  }
+};
+
+export const addAttributeToCollection = (
+  id: string,
+  onError: OnThunkError
+): AppThunk => async (dispatch) => {
+  dispatch(setUpdating(true));
+
+  try {
+    const db = workspaceDb();
+    const collectionModel = new CollectionModel(db);
+    collectionModel.addAttribute(id);
+    dispatch(setSynced(false));
+    dispatch(setViewsSynced(false));
   } catch (err) {
     onError(err);
   } finally {

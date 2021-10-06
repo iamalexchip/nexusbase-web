@@ -16,7 +16,7 @@ const ViewFactory: FC<Props> = ({ view }) => {
 
   const viewProps = { collection, view };
 
-  if (view.type === 'table') {
+  if (view.viewType === 'table') {
     return <TableView {...viewProps} />;
   }
 

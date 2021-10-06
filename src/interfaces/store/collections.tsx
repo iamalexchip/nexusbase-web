@@ -28,4 +28,5 @@ export type CollectionsData = {
   collections: Collection[] | null;
   collection: Collection | null;
   newId: string | null;
+  isSynced: boolean;
 };

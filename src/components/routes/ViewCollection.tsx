@@ -1,32 +1,52 @@
-import React, { FC, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { FC, useCallback, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
 import { getCollection } from '../../store/slices/collections';
-import { getViews } from '../../store/slices/views';
-import routes from '../../utils/routes';
+import { getViews, setSelectedId } from '../../store/slices/views';
 import BreadCrumbs from '../Breadcrumbs';
 import ViewFactory from '../factories/ViewFactory';
-import ViewSwitcher from '../ViewSwitcher';
+import ViewNav from '../views/ViewNav';
 
 const ViewCollection: FC = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();
-  const { collection, views } = useAppSelector(({ collections, views }) => ({
+  const {
+    collection,
+    views,
+    viewId,
+    collectionsSynced,
+    viewsSynced,
+  } = useAppSelector(({ collections, views }) => ({
     collection: collections.data.collection,
+    collectionsSynced: collections.data.isSynced,
     views: views.data.views,
+    viewId: views.data.selectedId,
+    viewsSynced: views.data.isSynced,
   }));
-  const [viewId, setViewId] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchCollection = useCallback(() => {
     dispatch(getCollection(id, () => {}));
+  }, [dispatch, id]);
+
+  const fetchViews = useCallback(() => {
     dispatch(getViews(id, () => {}));
   }, [dispatch, id]);
 
   useEffect(() => {
+    fetchCollection();
+    fetchViews();
+  }, [dispatch, fetchCollection, fetchViews]);
+
+  useEffect(() => {
     if (!viewId && views) {
-      setViewId(views[0].id);
+      dispatch(setSelectedId(views[0].id));
     }
-  }, [viewId, views]);
+  }, [dispatch, views, viewId]);
+
+  useEffect(() => {
+    if (!collectionsSynced) fetchCollection();
+    if (!viewsSynced) fetchViews();
+  }, [collectionsSynced, fetchCollection, fetchViews, viewsSynced]);
 
   if (!collection) {
     return <div>Loading....</div>;
@@ -38,14 +58,7 @@ const ViewCollection: FC = () => {
     <div>
       <BreadCrumbs data={[{ text: collection.name }]} />
       <h2>{collection.name}</h2>
-      <hr />
-      <Link to={routes.collections.edit(collection.id)}>Edit</Link>
-      {viewId ? (
-        <ViewSwitcher defaultValue={viewId} onChange={(id) => setViewId(id)} />
-      ) : (
-        <p>loading views</p>
-      )}
-      <hr />
+      <ViewNav />
       {selectedView ? <ViewFactory view={selectedView} /> : <p>loading view</p>}
     </div>
   );

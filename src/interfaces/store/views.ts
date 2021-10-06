@@ -8,7 +8,7 @@ export type View = {
   id: string;
   collectionId: string;
   name: string;
-  type: ViewTypes;
+  viewType: ViewTypes;
   attributes: string[];
   options: ViewOptions;
   createdAt: number;
@@ -19,4 +19,6 @@ export type ViewsData = {
   views: View[] | null;
   view: View | null;
   newId: string | null;
+  selectedId: string | null;
+  isSynced: boolean;
 };

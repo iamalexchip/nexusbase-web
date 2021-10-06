@@ -18,6 +18,8 @@ const initialState: SliceState<LoadingState, ViewsData> = {
     views: null,
     view: null,
     newId: null,
+    selectedId: null,
+    isSynced: true,
   },
 };
 
@@ -27,13 +29,21 @@ export const viewsSlice = createSlice({
   reducers: {
     setViews(state, { payload }: PayloadAction<View[]>) {
       state.data.views = payload;
+      state.data.isSynced = true;
     },
     setView(state, { payload }: PayloadAction<View | null>) {
       state.data.view = payload;
       state.data.newId = null;
+      state.data.isSynced = true;
     },
     setNewId(state, { payload }: PayloadAction<string | null>) {
       state.data.newId = payload;
+    },
+    setSelectedId(state, { payload }: PayloadAction<string | null>) {
+      state.data.selectedId = payload;
+    },
+    setSynced(state, { payload }: PayloadAction<boolean>) {
+      state.data.isSynced = payload;
     },
     setCreating(state, { payload }: PayloadAction<boolean>) {
       state.loading.isCreating = payload;
@@ -57,9 +67,13 @@ const {
   setViews,
   setCreating,
   setNewId,
+  setSelectedId,
+  setSynced,
   setFetchingList,
   setUpdating,
 } = viewsSlice.actions;
+
+export { setSelectedId, setSynced };
 export const { reducer: viewsReducer } = viewsSlice;
 
 export const createView = (
