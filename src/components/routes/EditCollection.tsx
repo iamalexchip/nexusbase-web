@@ -1,4 +1,3 @@
-import { Formik } from 'formik';
 import React, { FC, useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
@@ -9,30 +8,7 @@ import {
 } from '../../store/slices/collections';
 import routes from '../../utils/routes';
 import BreadCrumbs from '../Breadcrumbs';
-import TextInput from '../inputs/TextInput';
-
-type FormData = {
-  name: string;
-};
-
-const CollectionForm: FC<{
-  initialValues: FormData;
-  onSubmit: (values: FormData) => void;
-  isLoading: boolean;
-}> = ({ initialValues, onSubmit, isLoading }) => (
-  <Formik initialValues={initialValues} onSubmit={onSubmit}>
-    {({ submitForm }) => {
-      return (
-        <div>
-          <TextInput name="name" />
-          <button type="submit" disabled={isLoading} onClick={submitForm}>
-            Submit
-          </button>
-        </div>
-      );
-    }}
-  </Formik>
-);
+import CollectionForm, { iFormData } from '../forms/CollectionForm';
 
 const EditCollection: FC = () => {
   const dispatch = useAppDispatch();
@@ -62,7 +38,7 @@ const EditCollection: FC = () => {
     return <div>Loading....</div>;
   }
 
-  const handleSubmit = (values: FormData) => {
+  const handleSubmit = (values: iFormData) => {
     dispatch(updateCollectionDetails(id, values, () => {}));
   };
 

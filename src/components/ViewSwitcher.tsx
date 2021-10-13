@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import Select, { Options } from 'react-select';
 import { useAppSelector } from '../hooks/storeHooks';
 import { SelectOption } from '../interfaces';
+import SingleSelect from './inputs/SingleSelect';
 
 type Props = {
   defaultValue: string;
@@ -16,14 +17,15 @@ const ViewSwitcher: FC<Props> = ({ defaultValue, onChange }) => {
   const options: Options<SelectOption> = views
     ? views.map((view) => ({ value: view.id, label: view.name || 'untitled' }))
     : [];
-  const selectedOption = options.find(({ value }) => value === defaultValue);
+  //const selectedOption = options.find(({ value }) => value === defaultValue);
 
   return (
-    <Select
+    <SingleSelect
       isLoading={!views}
-      value={selectedOption}
+      name="view"
+      defaultValue={defaultValue}
       options={options}
-      onChange={(newOption) => newOption && onChange(newOption.value)}
+      onChange={(newOption) => newOption && onChange(newOption)}
     />
   );
 };
