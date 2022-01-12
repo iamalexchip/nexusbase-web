@@ -1,15 +1,17 @@
-import React, { FC } from 'react';
-import Select, { Options } from 'react-select';
-import { useAppSelector } from '../hooks/storeHooks';
+import { Formik } from 'formik';
+import { FC } from 'react';
+import { Options } from 'react-select';
+import { useAppDispatch, useAppSelector } from '../hooks/storeHooks';
 import { SelectOption } from '../interfaces';
+import { setSelectedId } from '../store/slices/views';
 import SingleSelect from './inputs/SingleSelect';
 
-type Props = {
-  defaultValue: string;
-  onChange: (id: string) => void;
+export type iFormData = {
+  viewId: string;
 };
 
-const ViewSwitcher: FC<Props> = ({ defaultValue, onChange }) => {
+const ViewSwitcher: FC = () => {
+  const dispatch = useAppDispatch();
   const { views } = useAppSelector(({ views }) => ({
     views: views.data.views,
   }));
@@ -17,16 +19,28 @@ const ViewSwitcher: FC<Props> = ({ defaultValue, onChange }) => {
   const options: Options<SelectOption> = views
     ? views.map((view) => ({ value: view.id, label: view.name || 'untitled' }))
     : [];
-  //const selectedOption = options.find(({ value }) => value === defaultValue);
+
+  function handleSubmit(values: iFormData) {
+    dispatch(setSelectedId(values.viewId));
+  }
 
   return (
-    <SingleSelect
-      isLoading={!views}
-      name="view"
-      defaultValue={defaultValue}
-      options={options}
-      onChange={(newOption) => newOption && onChange(newOption)}
-    />
+    <Formik
+      initialValues={{ viewId: options[0].value }}
+      onSubmit={handleSubmit}
+      change
+    >
+      {({ submitForm }) => {
+        return (
+          <SingleSelect
+            isLoading={!views}
+            name="viewId"
+            options={options}
+            onChange={submitForm}
+          />
+        );
+      }}
+    </Formik>
   );
 };
 

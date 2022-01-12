@@ -23,8 +23,51 @@ export const workspaceDb = (WorkspaceId: string = 'dev') => {
       id: '9VxN5dbt8',
       name: 'Demo workspace',
     },
-    collections: [],
-    views: [],
+    collections: [
+      {
+        id: 'cdcae1641964638665',
+        name: 'Untitled Collection',
+        description: null,
+        attributes: [
+          {
+            id: 'f1',
+            type: 'line',
+            label: 'Title',
+          },
+          {
+            id: 'f2',
+            type: 'line',
+            label: 'Description',
+          },
+        ],
+        titleAttribute: 'f1',
+        defaultView: 'vaptv1641964638778',
+        createdAt: 1641964638666,
+        updatedAt: 1641964638666,
+      },
+    ],
+    views: [
+      {
+        id: 'vaptv1641964638665',
+        collectionId: 'cdcae1641964638665',
+        name: '',
+        viewType: 'table',
+        attributes: ['f1'],
+        options: {},
+        createdAt: 1641964638665,
+        updatedAt: 1641964638665,
+      },
+      {
+        id: 'vaptv1641964638778',
+        collectionId: 'cdcae1641964638665',
+        name: 'view2',
+        viewType: 'table',
+        attributes: ['f1', 'f2'],
+        options: {},
+        createdAt: 1641964638665,
+        updatedAt: 1641964638665,
+      },
+    ],
   };
   const adapter = new LocalStorage<WorkspaceDB>(WorkspaceId, { defaultValue });
 

@@ -1,32 +1,36 @@
 import { useField } from 'formik';
-import React, { FC } from 'react';
-import Select, { Options } from 'react-select';
+import { FC } from 'react';
+import Select, { Options, SingleValue } from 'react-select';
 import { SelectOption } from '../../interfaces';
 
 type Props = {
   isLoading: boolean;
   name: string;
   options: Options<SelectOption>;
-  defaultValue: string | undefined;
-  onChange: (id: string) => void;
+  defaultValue?: string | undefined;
+  onChange?: (nextValue: string) => void;
 };
 
 const SingleSelect: FC<Props> = ({
   isLoading,
   name,
   options,
-  defaultValue,
-  onChange,
+  onChange = () => {},
 }) => {
-  const [, , { setValue }] = useField(name);
-  const selectedOption = options.find(({ value }) => value === defaultValue);
+  const [field, , { setValue }] = useField(name);
+  const selectedOption = options.find(({ value }) => value === field.value);
+  const onDropdownChange = (newOption: SingleValue<SelectOption>) => {
+    if (!newOption) return;
+    setValue(newOption.value);
+    onChange(newOption.value);
+  };
 
   return (
     <Select
       isLoading={isLoading}
       value={selectedOption}
       options={options}
-      onChange={(newOption) => newOption && setValue(newOption.value)}
+      onChange={onDropdownChange}
     />
   );
 };
