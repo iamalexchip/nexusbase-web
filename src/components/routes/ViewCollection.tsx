@@ -35,7 +35,7 @@ const ViewCollection: FC = () => {
   useEffect(() => {
     fetchCollection();
     fetchViews();
-  }, [dispatch, fetchCollection, fetchViews]);
+  }, [fetchCollection, fetchViews]);
 
   useEffect(() => {
     if (!viewId && views) {

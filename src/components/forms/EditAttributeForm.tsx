@@ -1,14 +1,11 @@
 import React, { FC } from 'react';
 import { Formik } from 'formik';
 import TextInput from '../inputs/TextInput';
-
-export type iFormData = {
-  label: string;
-};
+import { Attribute } from '../../interfaces/store/collections';
 
 const EditAttributeForm: FC<{
-  initialValues: iFormData;
-  onSubmit: (values: iFormData) => void;
+  initialValues: Attribute;
+  onSubmit: (values: Attribute) => void;
   isLoading: boolean;
 }> = ({ initialValues, onSubmit, isLoading }) => (
   <Formik initialValues={initialValues} onSubmit={onSubmit}>

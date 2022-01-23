@@ -29,4 +29,5 @@ export type CollectionsData = {
   collection: Collection | null;
   newId: string | null;
   isSynced: boolean;
+  editAttribute: { colId: string; attrId: string } | null;
 };
