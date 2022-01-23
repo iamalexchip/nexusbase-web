@@ -11,8 +11,15 @@ import Modal from '../Modal';
 
 const PropertyModal: FC = () => {
   const dispatch = useAppDispatch();
-  const { collections, editProperty } = useAppSelector(({ collections }) => ({
+  const {
+    collections,
+    collectionsSynced,
+    isFetchingList,
+    editProperty,
+  } = useAppSelector(({ collections }) => ({
     collections: collections.data.collections,
+    collectionsSynced: collections.data.isSynced,
+    isFetchingList: collections.loading.isFetchingList,
     editProperty: collections.data.editProperty,
   }));
   const collection = collections?.find(
@@ -24,10 +31,10 @@ const PropertyModal: FC = () => {
   );
 
   useEffect(() => {
-    if (editProperty && collections === null) {
+    if (!collectionsSynced || (editProperty && collections === null)) {
       dispatch(getCollections(() => {}));
     }
-  }, [dispatch, editProperty, collections]);
+  }, [dispatch, editProperty, collections, collectionsSynced]);
 
   const handleSubmit = (values: Property) => {
     if (collection && property) {
@@ -41,7 +48,7 @@ const PropertyModal: FC = () => {
     return <></>;
   }
 
-  if (!collections) {
+  if (!collections || isFetchingList) {
     return (
       <Modal show={true} onClose={() => dispatch(setEditProperty(null))}>
         Loading...
