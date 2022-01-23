@@ -6,14 +6,14 @@ import { store } from '../../store';
 import theme from '../../theme/tailwind';
 import Routes from './Routes';
 import '../../theme/index.css';
-import AttributeModal from '../modals/AttributeModal';
+import PropertyModal from '../modals/PropertyModal';
 
 const App: FC = () => (
   <Provider store={store}>
     <ThemeProvider theme={theme}>
       <GlobalStyle />
       <Routes />
-      <AttributeModal />
+      <PropertyModal />
     </ThemeProvider>
   </Provider>
 );

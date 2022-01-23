@@ -3,8 +3,8 @@ import { useAppDispatch } from '../../../hooks/storeHooks';
 import { Collection } from '../../../interfaces/store/collections';
 import { View } from '../../../interfaces/store/views';
 import {
-  addAttributeToCollection,
-  setEditAttribute,
+  addPropertyToCollection,
+  setEditProperty,
 } from '../../../store/slices/collections';
 
 type Props = {
@@ -14,17 +14,17 @@ type Props = {
 
 const TableColumn: FC<{
   collection: Collection;
-  attributeId: string;
-  editAttribute: () => void;
-}> = ({ collection, attributeId, editAttribute }) => {
-  const attribute = collection.attributes.find(
-    (attribute) => attribute.id === attributeId
+  propertyId: string;
+  editProperty: () => void;
+}> = ({ collection, propertyId, editProperty }) => {
+  const property = collection.properties.find(
+    (property) => property.id === propertyId
   );
-  if (!attribute) return <></>;
+  if (!property) return <></>;
 
   return (
-    <td className="cursor-pointer" onClick={editAttribute}>
-      {attribute.label}
+    <td className="cursor-pointer" onClick={editProperty}>
+      {property.label}
     </td>
   );
 };
@@ -33,27 +33,27 @@ const TableHeader: FC<Props> = ({ collection, view }) => {
   const dispatch = useAppDispatch();
   const [newColumnText, setNewColumnText] = useState<string>('');
 
-  const handleAddAttribute = () => {
-    dispatch(addAttributeToCollection(collection.id, () => {}));
+  const handleAddProperty = () => {
+    dispatch(addPropertyToCollection(collection.id, () => {}));
   };
-  const handleEditAttribute = (attributeId: string) =>
-    dispatch(setEditAttribute({ colId: collection.id, attrId: attributeId }));
+  const handleEditProperty = (propertyId: string) =>
+    dispatch(setEditProperty({ colId: collection.id, propId: propertyId }));
 
   return (
     <thead>
       <tr>
-        {view.attributes.map((attributeId, index) => (
+        {view.properties.map((propertyId, index) => (
           <TableColumn
             key={index}
             collection={collection}
-            attributeId={attributeId}
-            editAttribute={() => handleEditAttribute(attributeId)}
+            propertyId={propertyId}
+            editProperty={() => handleEditProperty(propertyId)}
           />
         ))}
         <td
-          onMouseOver={() => setNewColumnText('Add attribute')}
+          onMouseOver={() => setNewColumnText('Add property')}
           onMouseOut={() => setNewColumnText('')}
-          onClick={handleAddAttribute}
+          onClick={handleAddProperty}
         >
           + {newColumnText}
         </td>

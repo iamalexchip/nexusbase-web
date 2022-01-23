@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk } from '../index';
 import { LoadingState, OnThunkError, SliceState } from '../../interfaces/store';
 import {
-  Attribute,
+  Property,
   Collection,
   CollectionsData,
 } from '../../interfaces/store/collections';
@@ -24,7 +24,7 @@ const initialState: SliceState<LoadingState, CollectionsData> = {
     collection: null,
     newId: null,
     isSynced: true,
-    editAttribute: null,
+    editProperty: null,
   },
 };
 
@@ -56,11 +56,11 @@ export const collectionsSlice = createSlice({
     setFetchingList(state, { payload }: PayloadAction<boolean>) {
       state.loading.isFetchingList = payload;
     },
-    setEditAttribute(
+    setEditProperty(
       state,
-      { payload }: PayloadAction<{ colId: string; attrId: string } | null>
+      { payload }: PayloadAction<{ colId: string; propId: string } | null>
     ) {
-      state.data.editAttribute = payload;
+      state.data.editProperty = payload;
     },
     setUpdating(state, { payload }: PayloadAction<boolean>) {
       state.loading.isUpdating = payload;
@@ -79,10 +79,10 @@ const {
   setSynced,
   setFecthingOne,
   setFetchingList,
-  setEditAttribute,
+  setEditProperty,
   setUpdating,
 } = collectionsSlice.actions;
-export { setEditAttribute };
+export { setEditProperty };
 export const { reducer: collectionsReducer } = collectionsSlice;
 
 export const createCollection = (onError: OnThunkError): AppThunk => async (
@@ -156,7 +156,7 @@ export const updateCollectionDetails = (
   }
 };
 
-export const addAttributeToCollection = (
+export const addPropertyToCollection = (
   id: string,
   onError: OnThunkError
 ): AppThunk => async (dispatch) => {
@@ -165,7 +165,7 @@ export const addAttributeToCollection = (
   try {
     const db = workspaceDb();
     const collectionModel = new CollectionModel(db);
-    collectionModel.addAttribute(id);
+    collectionModel.addProperty(id);
     dispatch(setSynced(false));
     dispatch(setViewsSynced(false));
   } catch (err) {
@@ -175,10 +175,10 @@ export const addAttributeToCollection = (
   }
 };
 
-export const updateCollectionAttribute = (
+export const updateCollectionProperty = (
   collectionId: string,
-  attributeId: string,
-  data: Attribute,
+  propertyId: string,
+  data: Property,
   onError: OnThunkError
 ): AppThunk => async (dispatch) => {
   dispatch(setUpdating(true));
@@ -186,7 +186,8 @@ export const updateCollectionAttribute = (
   try {
     const db = workspaceDb();
     const collectionModel = new CollectionModel(db);
-    collectionModel.updateAttribute(collectionId, attributeId, data);
+    collectionModel.updateProperty(collectionId, propertyId, data);
+    dispatch(setEditProperty(null));
     dispatch(setSynced(false));
     dispatch(setViewsSynced(false));
   } catch (err) {

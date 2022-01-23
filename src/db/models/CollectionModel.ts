@@ -1,6 +1,6 @@
 import { WorkspaceDbInstance } from '../../interfaces/db';
 import { IupdateCollectionDetails } from '../../interfaces/models';
-import { Attribute, Collection } from '../../interfaces/store/collections';
+import { Property, Collection } from '../../interfaces/store/collections';
 import BaseModel from './BaseModel';
 import ViewModel from './ViewModel';
 
@@ -11,13 +11,13 @@ export default class CollectionModel extends BaseModel {
 
   relatedCollections(collection: Collection) {
     let related: Collection[] = [];
-    const relationAttributes = collection.attributes.filter(
-      (attribute) => attribute.type === 'relation'
+    const relationProperties = collection.properties.filter(
+      (property) => property.type === 'relation'
     );
 
-    if (relationAttributes.length > 0) {
-      const relatedCollectionIds = relationAttributes.map(
-        (attribute) => attribute.options.collectionId
+    if (relationProperties.length > 0) {
+      const relatedCollectionIds = relationProperties.map(
+        (property) => property.options.collectionId
       );
 
       const relatedCollections = this.db
@@ -37,7 +37,7 @@ export default class CollectionModel extends BaseModel {
     const viewModel = new ViewModel(this.db);
     const view = viewModel.create({
       collectionId,
-      attributes: ['f1'],
+      properties: ['f1'],
     });
 
     const timestamp = Date.now();
@@ -45,14 +45,14 @@ export default class CollectionModel extends BaseModel {
       id: collectionId,
       name: 'Untitled Collection',
       description: null,
-      attributes: [
+      properties: [
         {
           id: 'f1',
           type: 'line',
           label: 'Title',
         },
       ],
-      titleAttribute: 'f1',
+      titleProperty: 'f1',
       defaultView: view.id,
       createdAt: timestamp,
       updatedAt: timestamp,
@@ -97,7 +97,7 @@ export default class CollectionModel extends BaseModel {
     return collectionRef.value();
   }
 
-  addAttribute(collectionId: string) {
+  addProperty(collectionId: string) {
     const collectionRef = this.db.get('collections').find({ id: collectionId });
     let collection = collectionRef.value();
 
@@ -105,25 +105,25 @@ export default class CollectionModel extends BaseModel {
       throw new Error(`Collection not found: ${collectionId}`);
     }
 
-    const attributeIds = collection.attributes.map((attribute) =>
-      Number(attribute.id.substr(1))
+    const propertyIds = collection.properties.map((property) =>
+      Number(property.id.substr(1))
     );
-    const attributeId = `a${Math.max(...attributeIds) + 1}`;
+    const propertyId = `a${Math.max(...propertyIds) + 1}`;
 
-    collection.attributes.push({
-      id: attributeId,
+    collection.properties.push({
+      id: propertyId,
       type: 'line',
-      label: `Attr ${attributeId.substr(1)}`,
+      label: `Prop ${propertyId.substr(1)}`,
     });
     collection.updatedAt = Date.now();
     collectionRef.assign(collection);
 
-    // add new attribute to views with a type of table
+    // add new property to views with a type of table
     this.db
       .get('views')
       .filter({ collectionId: collection.id, viewType: 'table' })
       .forEach((view) => {
-        view.attributes.push(attributeId);
+        view.properties.push(propertyId);
       })
       .value();
 
@@ -132,7 +132,7 @@ export default class CollectionModel extends BaseModel {
     return collectionRef.value();
   }
 
-  updateAttribute(collectionId: string, attributeId: string, data: Attribute) {
+  updateProperty(collectionId: string, propertyId: string, data: Property) {
     const collectionRef = this.db.get('collections').find({ id: collectionId });
     let collection = collectionRef.value();
 
@@ -140,21 +140,22 @@ export default class CollectionModel extends BaseModel {
       throw new Error(`Collection not found: ${collectionId}`);
     }
 
-    const attribute = collection.attributes.find(
-      (attribute) => attribute.id === attributeId
+    const property = collection.properties.find(
+      (property) => property.id === propertyId
     );
 
-    if (!attribute) {
+    if (!property) {
       throw new Error(
-        `Collection [${collectionId}] prop not found [${attributeId}]`
+        `Collection [${collectionId}] prop not found [${propertyId}]`
       );
     }
 
-    const attributeIndex = collection.attributes.findIndex(
-      (prop) => prop.id === attribute.id
+    const propertyIndex = collection.properties.findIndex(
+      (prop) => prop.id === property.id
     );
-    const updatedAttribute = { ...attribute, ...data, id: attribute.id };
-    collection.attributes[attributeIndex] = updatedAttribute;
+    const updatedProperty = { ...property, ...data, id: property.id };
+    console.log(updatedProperty);
+    collection.properties[propertyIndex] = updatedProperty;
     collection.updatedAt = Date.now();
 
     collectionRef.assign(collection).write();

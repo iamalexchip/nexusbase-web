@@ -28,7 +28,7 @@ export const workspaceDb = (WorkspaceId: string = 'dev') => {
         id: 'cdcae1641964638665',
         name: 'Untitled Collection',
         description: null,
-        attributes: [
+        properties: [
           {
             id: 'f1',
             type: 'line',
@@ -40,7 +40,7 @@ export const workspaceDb = (WorkspaceId: string = 'dev') => {
             label: 'Description',
           },
         ],
-        titleAttribute: 'f1',
+        titleProperty: 'f1',
         defaultView: 'vaptv1641964638778',
         createdAt: 1641964638666,
         updatedAt: 1641964638666,
@@ -52,7 +52,7 @@ export const workspaceDb = (WorkspaceId: string = 'dev') => {
         collectionId: 'cdcae1641964638665',
         name: '',
         viewType: 'table',
-        attributes: ['f1'],
+        properties: ['f1'],
         options: {},
         createdAt: 1641964638665,
         updatedAt: 1641964638665,
@@ -62,7 +62,7 @@ export const workspaceDb = (WorkspaceId: string = 'dev') => {
         collectionId: 'cdcae1641964638665',
         name: 'view2',
         viewType: 'table',
-        attributes: ['f1', 'f2'],
+        properties: ['f1', 'f2'],
         options: {},
         createdAt: 1641964638665,
         updatedAt: 1641964638665,

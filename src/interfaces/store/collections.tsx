@@ -1,4 +1,4 @@
-export type AttributeType =
+export type PropertyName =
   | 'line'
   | 'checkbox'
   | 'date'
@@ -6,9 +6,9 @@ export type AttributeType =
   | 'updatedAt'
   | 'relation';
 
-export type Attribute = {
+export type Property = {
   id: string;
-  type: AttributeType;
+  type: PropertyName;
   label: string;
   options?: any;
 };
@@ -17,8 +17,8 @@ export type Collection = {
   id: string;
   name: string;
   description: string | null;
-  attributes: Attribute[];
-  titleAttribute: string;
+  properties: Property[];
+  titleProperty: string;
   defaultView: string;
   createdAt: number;
   updatedAt: number;
@@ -29,5 +29,5 @@ export type CollectionsData = {
   collection: Collection | null;
   newId: string | null;
   isSynced: boolean;
-  editAttribute: { colId: string; attrId: string } | null;
+  editProperty: { colId: string; propId: string } | null;
 };

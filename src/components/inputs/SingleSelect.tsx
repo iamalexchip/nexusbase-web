@@ -4,15 +4,15 @@ import Select, { Options, SingleValue } from 'react-select';
 import { SelectOption } from '../../interfaces';
 
 type Props = {
-  isLoading: boolean;
   name: string;
   options: Options<SelectOption>;
   defaultValue?: string | undefined;
+  isLoading?: boolean;
   onChange?: (nextValue: string) => void;
 };
 
 const SingleSelect: FC<Props> = ({
-  isLoading,
+  isLoading = false,
   name,
   options,
   onChange = () => {},

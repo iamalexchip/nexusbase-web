@@ -9,7 +9,7 @@ export type View = {
   collectionId: string;
   name: string;
   viewType: ViewTypes;
-  attributes: string[];
+  properties: string[];
   options: ViewOptions;
   createdAt: number;
   updatedAt: number;
