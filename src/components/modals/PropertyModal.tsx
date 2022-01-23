@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
 import { Property } from '../../interfaces/store/collections';
 import {

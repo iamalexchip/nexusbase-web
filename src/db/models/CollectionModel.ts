@@ -154,7 +154,6 @@ export default class CollectionModel extends BaseModel {
       (prop) => prop.id === property.id
     );
     const updatedProperty = { ...property, ...data, id: property.id };
-    console.log(updatedProperty);
     collection.properties[propertyIndex] = updatedProperty;
     collection.updatedAt = Date.now();
 
