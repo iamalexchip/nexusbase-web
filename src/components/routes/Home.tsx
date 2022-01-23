@@ -28,7 +28,6 @@ const Home: FC = () => {
 
   useEffect(() => {
     if (newId) {
-      console.log(newId);
       history.push(routes.collections.read(newId));
     }
   }, [history, newId]);
